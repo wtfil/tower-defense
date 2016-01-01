@@ -1,6 +1,6 @@
 export default {
 	name: 'Grass',
-	texture: 'images/grass.png',
+	textures: ['images/grass.png'],
 	width: 32,
 	height: 32
 };

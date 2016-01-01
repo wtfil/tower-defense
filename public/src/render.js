@@ -1,26 +1,34 @@
 var cache = [];
 
-export default function render(obj, {x, y, layer, frame = 0}) {
+export function render(obj, {x, y, layer, frame = 0}) {
+	function done() {
+		layer.drawImage(img, x, y, obj.width, obj.height);
+	}
 	var url = obj.textures[frame];
 	var img = cache[url];
 	if (!img) {
 		img = cache[url] = new Image();
 		img.src = url;
+		img.loads = [];
+		img.onload = () => {
+			img.loads.forEach(fn => fn());
+		};
 	}
-	img.onload = () => {
-		layer.drawImage(img, x, y, obj.width, obj.height);
-	};
 	if (img.complete) {
-		img.onload();
+		done();
+	} else {
+		img.loads.push(done);
 	}
 }
 
-function preload(objects, cb) {
+export function preload(objects, cb) {
 	var textures = objects.reduce((acc, item) => acc.concat(item.textures), []);
 	Promise.all(textures.map(url => {
 		return new Promise(resolve => {
 			var img = new Image();
+			cache[url] = img;
 			img.onload = resolve;
+			img.loads = [];
 			img.src = url;
 		});
 	})).then(cb);
