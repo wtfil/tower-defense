@@ -6,7 +6,7 @@
     "start": "gulp dev"
   },
   "dependencies": {
-    "babelify": "^6.1.2",
+    "babelify": "^6.3.0",
     "browserify": "^6.1.0",
     "gulp": "^3.8.8",
     "gulp-util": "^3.0.1",
