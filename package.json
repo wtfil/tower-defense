@@ -1,0 +1,16 @@
+{
+  "author": "Evgen Filatov",
+  "name": "tower-defense",
+  "version": "0.1.0",
+  "scripts": {
+    "start": "gulp dev"
+  },
+  "dependencies": {
+    "babelify": "^6.1.2",
+    "browserify": "^6.1.0",
+    "gulp": "^3.8.8",
+    "gulp-util": "^3.0.1",
+    "http-server": "^0.7.2",
+    "watchify": "^2.0.0"
+  }
+}
