@@ -1,17 +1,17 @@
 import {render} from './render';
 
-function Unit(config, layer) {
+function Unit(config, opts) {
 	this.config = config;
-	this.layer = layer;
+	this.layer = opts.layer;
+	this.x = opts.x;
+	this.y = opts.y;
 	this.frame = 0;
-	this.x = 100;
-	this.y = 10;
 	this.updateFrame();
 }
 Unit.prototype.updateFrame = function () {
 	this.frame = this.frame === this.config.textures.length - 1 ?
 		0 : (this.frame + 1);
-	setTimeout(this.updateFrame.bind(this), 300);
+	this.frameTimer = setTimeout(this.updateFrame.bind(this), 300);
 };
 Unit.prototype.move = function () {
 	this.x ++;

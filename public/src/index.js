@@ -1,5 +1,5 @@
 import {getFirst} from './maps';
-import {unit, grass, tower} from './objects';
+import {unit, grass, tower, rock, sand} from './objects';
 import {render, preload} from './render';
 import Unit from './Unit';
 
@@ -24,19 +24,34 @@ function renderMap() {
 				y: SEGMENT * i,
 				layer: ctx
 			};
-			render(grass, opts)
+			render(item, opts)
 		});
 	});
 }
 
-var u = new Unit(unit, ctx);
+var u1 = new Unit(unit, {
+	x: 100,
+	y: 10,
+	layer: ctx
+});
+var u2 = new Unit(unit, {
+	x: 110,
+	y: 15,
+	layer: ctx
+});
+var units = [u1, u2];
 
 function loop() {
-	u.clear();
-	u.move();
+	units.forEach(item => {
+		item.clear();
+		item.move();
+	});
 	renderMap();
-	u.render();
+	render(tower, {x: 200, y: 10, layer: ctx});
+	units.forEach(item => {
+		item.render();
+	});
 	requestAnimationFrame(loop);
 }
 
-preload([grass, unit], loop);
+preload([grass, sand, rock, unit, tower], loop);
