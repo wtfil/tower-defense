@@ -1,5 +1,5 @@
 export default {
-	name: 'Tower',
+	name: 'Arrow Tower',
 	type: 'tower',
 	textures: ['images/tower_1_1.png'],
 	width: 32,

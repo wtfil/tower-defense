@@ -9,7 +9,6 @@ function Unit(config, {x, y, layer, target}) {
 	this.frame = 0;
 	this.isTower = config.type === 'tower';
 	this.health = config.health;
-	this.range = this.config.range;
 	this.target = target;
 	this.angle = target ? getAngle(this, target) : 0;
 	this.ready = true;

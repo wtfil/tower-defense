@@ -1,8 +1,9 @@
 import {getFirst} from './maps';
-import {unit, tower} from './objects';
-import {render, preloadAll} from './render';
+import {unit, arrowTower, cannonTower} from './objects';
+import {render, renderMap, preloadAll} from './render';
 import initUnits from './units';
 
+const map = getFirst();
 const requestAnimationFrame = window.requestAnimationFrame ||
 	window.webkitRequestAnimationFrame ||
 	window.mozRequestAnimationFrame ||
@@ -10,27 +11,8 @@ const requestAnimationFrame = window.requestAnimationFrame ||
 
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
-const SEGMENT = 32;
 canvas.width = 640;
 canvas.height = 480;
-
-function renderMap() {
-	var map = getFirst();
-	map.forEach((line, i) => {
-		line.forEach((item, j) => {
-			var opts = {
-				x: SEGMENT * j,
-				y: SEGMENT * i,
-				layer: ctx
-			};
-			render(item, opts)
-		});
-	});
-}
-
-function random(from, to) {
-	return Math.round(Math.random() * (to - from)) + from;
-}
 
 var units = initUnits();
 setInterval(function () {
@@ -39,19 +21,24 @@ setInterval(function () {
 		y: 300,
 		layer: ctx
 	});
+	units.add(unit, {
+		x: 5,
+		y: 305,
+		layer: ctx
+	});
 }, 2000);
 
-units.add(tower, {
+units.add(arrowTower, {
 	x: 300,
 	y: 250,
 	layer: ctx
 });
-units.add(tower, {
+units.add(cannonTower, {
 	x: 300,
 	y: 350,
 	layer: ctx
 });
-units.add(tower, {
+units.add(arrowTower, {
 	x: 400,
 	y: 350,
 	layer: ctx
@@ -65,7 +52,7 @@ function loop() {
 		item.clear();
 		item.move();
 	});
-	renderMap();
+	renderMap(map, {layer: ctx});
 	units.get().forEach(item => {
 		item.render();
 	});

@@ -1,5 +1,5 @@
 import Unit from './Unit';
-import {inRange, getAngle, inObject} from './utils';
+import {inRange, getAngle, inObject, inSplash} from './utils';
 
 export default function init() {
 	var towers = [];
@@ -55,20 +55,45 @@ export default function init() {
 	}
 
 	function collision() {
-		var i, shot;
+		var i, j, shot;
 		for (i = 0; i < shots.length; i ++) {
 			shot = shots[i];
 			if (shot.config.homing && inObject(shot, shot.target)) {
-				shot.target.takeDamage(shot.config.damage);
-				if (!shot.target.health) {
-					remove(enemies, shot.target);
-					clearTarget(shot.target);
+				attack(shot, shot.target);
+			}
+			if (!shot.config.homing) {
+				for (j = 0; j < enemies.length; j ++) {
+					if (inObject(shot, enemies[j])) {
+						attack(shot, enemies[j]);
+						break;
+					}
 				}
-				shot.die();
-				remove(shots, shot);
 			}
 		}
 	}
+	function attack(shot, target) {
+		var i;
+		if (shot.config.splash) {
+			for (i = 0; i < enemies.length; i ++) {
+				if (inSplash(shot, enemies[i])) {
+					attackSingle(shot, enemies[i]);
+				}
+			}
+		} else {
+			attackSingle(shot, target);
+		}
+		shot.die();
+		remove(shots, shot);
+	}
+
+	function attackSingle(shot, target) {
+		target.takeDamage(shot.config.damage);
+		if (!target.health) {
+			remove(enemies, target);
+			clearTarget(target);
+		}
+	}
+
 	function remove(arr, item) {
 		arr.splice(arr.indexOf(item), 1);
 	}

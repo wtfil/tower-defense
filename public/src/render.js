@@ -1,6 +1,8 @@
 var objects = require('./objects');
 var cache = [];
 
+const SEGMENT = 32;
+
 export function render(obj, {x, y, layer, frame = 0, health}) {
 	function done() {
 		var hp = health / obj.health;
@@ -27,6 +29,19 @@ export function render(obj, {x, y, layer, frame = 0, health}) {
 	} else {
 		img.loads.push(done);
 	}
+}
+
+export function renderMap(map, {layer}) {
+	map.forEach((line, i) => {
+		line.forEach((item, j) => {
+			var opts = {
+				x: SEGMENT * j,
+				y: SEGMENT * i,
+				layer
+			};
+			render(item, opts)
+		});
+	});
 }
 
 export function preload(items, cb) {

@@ -2,7 +2,7 @@ const sqrt = Math.sqrt;
 const sqr = x => x * x;
 
 export function inRange(t, e) {
-	return sqr(e.x - t.x) + sqr(e.y - t.y) < sqr(t.range);
+	return sqr(e.x - t.x) + sqr(e.y - t.y) < sqr(t.config.range);
 }
 
 export function getAngle(a, b) {
@@ -21,3 +21,14 @@ export function inObject(a, b) {
 		a.y >= b.y - a.config.height / 2 &&
 		a.y <= b.y + b.config.height + a.config.height / 2;
 }
+
+export function inSplash(shot, target) {
+	return sqr(shot.x - target.x - target.config.width) +
+		sqr(shot.y - target.y - target.config.height) <
+		sqr(shot.config.splash);
+}
+
+export function random(from, to) {
+	return Math.round(Math.random() * (to - from)) + from;
+}
+
