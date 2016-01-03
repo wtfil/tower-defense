@@ -1,10 +1,5 @@
 import Unit from './Unit';
-const sqrt = Math.sqrt;
-const sqr = x => x * x;
-
-function inRange(t, e) {
-	return sqr(e.x - t.x) + sqr(e.y - t.y) < sqr(t.range);
-}
+import {inRange, getAngle, inObject} from './utils';
 
 export default function init() {
 	var towers = [];
@@ -52,21 +47,40 @@ export default function init() {
 			shots.push(new Unit(tower.config.shot, {
 				x: tower.x,
 				y: tower.y,
+				target: tower.target,
 				angle: getAngle(tower, tower.target),
 				layer: tower.layer
 			}));
 		}
 	}
-	function getAngle(a, b) {
-		var dx = b.x - a.x;
-		var dy = b.y - a.y;
-		var angle = Math.atan(dy / dx);
-		if (dx < 0) {
-			angle = Math.PI + angle;
+
+	function collision() {
+		var i, shot;
+		for (i = 0; i < shots.length; i ++) {
+			shot = shots[i];
+			if (shot.config.homing && inObject(shot, shot.target)) {
+				shot.target.takeDamage(shot.config.damage);
+				if (!shot.target.health) {
+					remove(enemies, shot.target);
+					clearTarget(shot.target);
+				}
+				shot.die();
+				remove(shots, shot);
+			}
 		}
-		return angle;
+	}
+	function remove(arr, item) {
+		arr.splice(arr.indexOf(item), 1);
+	}
+	function clearTarget(target) {
+		var i;
+		for (i = 0; i < towers.length; i ++) {
+			if (towers[i].target === target) {
+				towers[i].setTarget(null);
+			}
+		}
 	}
 
-	return {add, get, setTargets, fire};
+	return {add, get, setTargets, fire, collision};
 }
 

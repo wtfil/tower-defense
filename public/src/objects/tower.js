@@ -7,9 +7,10 @@ export default {
 	movementSpeed: 0,
 	attackSpeed: 1,
 	range: 250,
-	damage: 10,
 	shot: {
 		textures: ['images/shot_1.png'],
+		damage: 10,
+		homing: true,
 		movementSpeed: 4,
 		width: 10,
 		height: 10

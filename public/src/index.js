@@ -33,11 +33,13 @@ function random(from, to) {
 }
 
 var units = initUnits();
-units.add(unit, {
-	x: 0,
-	y: 300,
-	layer: ctx
-});
+setInterval(function () {
+	units.add(unit, {
+		x: 0,
+		y: 300,
+		layer: ctx
+	});
+}, 2000);
 
 units.add(tower, {
 	x: 300,
@@ -49,10 +51,16 @@ units.add(tower, {
 	y: 350,
 	layer: ctx
 });
+units.add(tower, {
+	x: 400,
+	y: 350,
+	layer: ctx
+});
 
 function loop() {
 	units.setTargets();
 	units.fire();
+	units.collision();
 	units.get().forEach(item => {
 		item.clear();
 		item.move();

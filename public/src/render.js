@@ -1,9 +1,16 @@
 var objects = require('./objects');
 var cache = [];
 
-export function render(obj, {x, y, layer, frame = 0}) {
+export function render(obj, {x, y, layer, frame = 0, health}) {
 	function done() {
+		var hp = health / obj.health;
 		layer.drawImage(img, x, y, obj.width, obj.height);
+		if ('health' in obj) {
+			layer.fillStyle = '#00FF00';
+			layer.fillRect(x, y, obj.width, 2);
+			layer.fillStyle = '#FF0000';
+			layer.fillRect(x + hp * obj.width, y, (1 - hp) * obj.width, 2);
+		}
 	}
 	var url = obj.textures[frame];
 	var img = cache[url];
