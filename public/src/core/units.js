@@ -58,7 +58,7 @@ export default function init() {
 		var i, j, shot;
 		for (i = 0; i < shots.length; i ++) {
 			shot = shots[i];
-			if (shot.config.homing && inObject(shot, shot.target)) {
+			if (shot.config.homing && shot.target && inObject(shot, shot.target)) {
 				attack(shot, shot.target);
 			}
 			if (!shot.config.homing) {
@@ -70,6 +70,7 @@ export default function init() {
 				}
 			}
 		}
+		clearDeadEnemies();
 	}
 	function attack(shot, target) {
 		var i;
@@ -88,10 +89,18 @@ export default function init() {
 
 	function attackSingle(shot, target) {
 		target.takeDamage(shot.config.damage);
-		if (!target.health) {
-			remove(enemies, target);
-			clearTarget(target);
+	}
+
+	function clearDeadEnemies() {
+		var alive = [], i;
+		for(i = 0; i < enemies.length; i ++) {
+			if (enemies[i].alive) {
+				alive.push(enemies[i]);
+			} else {
+				clearTarget(enemies[i]);
+			}
 		}
+		enemies = alive;
 	}
 
 	function remove(arr, item) {

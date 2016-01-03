@@ -7,6 +7,7 @@ function Unit(config, {x, y, layer, target}) {
 	this.x = x;
 	this.y = y;
 	this.frame = 0;
+	this.alive = true;
 	this.isTower = config.type === 'tower';
 	this.health = config.health;
 	this.target = target;
@@ -59,6 +60,7 @@ Unit.prototype.fire = function () {
 Unit.prototype.die = function () {
 	clearTimeout(this.frameTimer);
 	clearTimeout(this.readyTimer);
+	this.alive = false;
 	this.health = 0;
 };
 Unit.prototype.clear = function () {

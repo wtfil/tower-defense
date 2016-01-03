@@ -5,7 +5,7 @@ export default {
 	width: 32,
 	height: 32,
 	movementSpeed: 0,
-	attackSpeed: 1,
+	attackSpeed: 2,
 	range: 250,
 	shot: {
 		textures: ['images/shot_1.png'],

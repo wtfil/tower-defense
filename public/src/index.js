@@ -1,6 +1,7 @@
 import {getFirst} from './maps';
 import {unit, arrowTower, cannonTower} from './objects';
 import {render, renderMap, preloadAll} from './core/render';
+import {random} from './core/utils';
 import initUnits from './core/units';
 
 const map = getFirst();
@@ -16,21 +17,29 @@ canvas.height = 480;
 
 var units = initUnits();
 setInterval(function () {
-	units.add(unit, {
-		x: 0,
-		y: 300,
-		layer: ctx
-	});
-	units.add(unit, {
-		x: 5,
-		y: 305,
-		layer: ctx
-	});
+	var i;
+	for (i = random(0, 4); i > 0; i --) {
+		units.add(unit, {
+			x: 0 + random(-20, 20),
+			y: 300 + random(-20, 20),
+			layer: ctx
+		});
+	}
 }, 2000);
 
 units.add(arrowTower, {
 	x: 300,
 	y: 250,
+	layer: ctx
+});
+units.add(arrowTower, {
+	x: 350,
+	y: 250,
+	layer: ctx
+});
+units.add(cannonTower, {
+	x: 260,
+	y: 350,
 	layer: ctx
 });
 units.add(cannonTower, {
