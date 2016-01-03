@@ -1,13 +1,12 @@
 import {getFirst} from './maps';
-import {unit, grass, tower, rock, sand} from './objects';
-import {render, preload} from './render';
-import Unit from './Unit';
+import {unit, tower} from './objects';
+import {render, preloadAll} from './render';
+import initUnits from './units';
 
 const requestAnimationFrame = window.requestAnimationFrame ||
 	window.webkitRequestAnimationFrame ||
 	window.mozRequestAnimationFrame ||
 	(cb => setTimeout(cb, 1000 / 60))
-
 
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
@@ -29,29 +28,40 @@ function renderMap() {
 	});
 }
 
-var u1 = new Unit(unit, {
-	x: 100,
-	y: 10,
+function random(from, to) {
+	return Math.round(Math.random() * (to - from)) + from;
+}
+
+var units = initUnits();
+units.add(unit, {
+	x: 0,
+	y: 300,
 	layer: ctx
 });
-var u2 = new Unit(unit, {
-	x: 110,
-	y: 15,
+
+units.add(tower, {
+	x: 300,
+	y: 250,
 	layer: ctx
 });
-var units = [u1, u2];
+units.add(tower, {
+	x: 300,
+	y: 350,
+	layer: ctx
+});
 
 function loop() {
-	units.forEach(item => {
+	units.setTargets();
+	units.fire();
+	units.get().forEach(item => {
 		item.clear();
 		item.move();
 	});
 	renderMap();
-	render(tower, {x: 200, y: 10, layer: ctx});
-	units.forEach(item => {
+	units.get().forEach(item => {
 		item.render();
 	});
 	requestAnimationFrame(loop);
 }
 
-preload([grass, sand, rock, unit, tower], loop);
+preloadAll(loop);

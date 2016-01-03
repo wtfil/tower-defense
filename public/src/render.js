@@ -1,3 +1,4 @@
+var objects = require('./objects');
 var cache = [];
 
 export function render(obj, {x, y, layer, frame = 0}) {
@@ -21,8 +22,10 @@ export function render(obj, {x, y, layer, frame = 0}) {
 	}
 }
 
-export function preload(objects, cb) {
-	var textures = objects.reduce((acc, item) => acc.concat(item.textures), []);
+export function preload(items, cb) {
+	var textures = items
+		.reduce((acc, item) => acc.concat(item.textures), [])
+		.filter(Boolean);
 	Promise.all(textures.map(url => {
 		return new Promise(resolve => {
 			var img = new Image();
@@ -34,3 +37,7 @@ export function preload(objects, cb) {
 	})).then(cb);
 }
 
+export function preloadAll(cb) {
+	var items = Object.keys(objects).map(key => objects[key]);
+	return preload(items, cb);
+}
