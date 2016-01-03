@@ -1,7 +1,7 @@
 import {getFirst} from './maps';
 import {unit, arrowTower, cannonTower} from './objects';
-import {render, renderMap, preloadAll} from './render';
-import initUnits from './units';
+import {render, renderMap, preloadAll} from './core/render';
+import initUnits from './core/units';
 
 const map = getFirst();
 const requestAnimationFrame = window.requestAnimationFrame ||

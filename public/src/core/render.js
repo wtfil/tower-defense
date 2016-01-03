@@ -1,4 +1,4 @@
-var objects = require('./objects');
+var objects = require('../objects');
 var cache = [];
 
 const SEGMENT = 32;
