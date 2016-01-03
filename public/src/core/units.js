@@ -60,6 +60,7 @@ export default function init() {
 			shot = shots[i];
 			if (shot.config.homing && shot.target && inObject(shot, shot.target)) {
 				attack(shot, shot.target);
+				continue;
 			}
 			if (!shot.config.homing) {
 				for (j = 0; j < enemies.length; j ++) {
@@ -70,7 +71,7 @@ export default function init() {
 				}
 			}
 		}
-		clearDeadEnemies();
+		clearDeadObjects();
 	}
 	function attack(shot, target) {
 		var i;
@@ -84,14 +85,13 @@ export default function init() {
 			attackSingle(shot, target);
 		}
 		shot.die();
-		remove(shots, shot);
 	}
 
 	function attackSingle(shot, target) {
 		target.takeDamage(shot.config.damage);
 	}
 
-	function clearDeadEnemies() {
+	function clearDeadObjects() {
 		var alive = [], i;
 		for(i = 0; i < enemies.length; i ++) {
 			if (enemies[i].alive) {
@@ -100,12 +100,10 @@ export default function init() {
 				clearTarget(enemies[i]);
 			}
 		}
+		shots = shots.filter(shot => shot.alive);
 		enemies = alive;
 	}
 
-	function remove(arr, item) {
-		arr.splice(arr.indexOf(item), 1);
-	}
 	function clearTarget(target) {
 		var i;
 		for (i = 0; i < towers.length; i ++) {
@@ -114,7 +112,19 @@ export default function init() {
 			}
 		}
 	}
+	function findByCoordinates(coors) {
+		var point = {
+			...coors,
+			config: {width: 0, height: 0} // OMG, MAKE IT SIMPLE
+		};
+		var i;
+		for (i = 0; i < towers.length; i ++) {
+			if (inObject(point, towers[i])) {
+				return towers[i];
+			}
+		}
+		return null;
+	}
 
-	return {add, get, setTargets, fire, collision};
+	return {add, get, setTargets, fire, collision, findByCoordinates};
 }
-

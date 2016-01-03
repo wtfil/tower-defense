@@ -1,4 +1,5 @@
 var objects = require('../objects');
+var {round} = require('./utils');
 var cache = [];
 
 const SEGMENT = 32;
@@ -6,7 +7,9 @@ const SEGMENT = 32;
 export function render(obj, {x, y, layer, frame = 0, health}) {
 	function done() {
 		var hp = health / obj.health;
+		layer.imageSmoothingEnabled = false;
 		layer.drawImage(img, x, y, obj.width, obj.height);
+		layer.globalAlpha = 1;
 		if ('health' in obj) {
 			layer.fillStyle = '#00FF00';
 			layer.fillRect(x, y, obj.width, 2);
@@ -42,6 +45,18 @@ export function renderMap(map, {layer}) {
 			render(item, opts)
 		});
 	});
+}
+
+export function renderCursor(obj, {x, y, layer}) {
+	if (!obj) {
+		return;
+	}
+	x = round(x, SEGMENT);
+	y = round(y, SEGMENT);
+	layer.globalAlpha = 0.4;
+	layer.fillStyle = '#00FF00';
+	layer.fillRect(x, y, SEGMENT, SEGMENT);
+	render(obj, {layer, x, y});
 }
 
 export function preload(items, cb) {
