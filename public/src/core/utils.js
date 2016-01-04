@@ -16,10 +16,12 @@ export function getAngle(a, b) {
 }
 
 export function inObject(a, b) {
-	return a.x >= b.x - a.config.width / 2 &&
-		a.x <= b.x + b.config.width + a.config.width / 2 &&
-		a.y >= b.y - a.config.height / 2 &&
-		a.y <= b.y + b.config.height + a.config.height / 2;
+	var aw2 = a.config ? a.config.width / 2 : 0;
+	var ah2 = a.config ? a.config.height / 2 : 0;
+	return a.x >= b.x - aw2 &&
+		a.x < b.x + b.config.width + aw2 &&
+		a.y >= b.y - ah2 &&
+		a.y < b.y + b.config.height + ah2;
 }
 
 export function inSplash(shot, target) {

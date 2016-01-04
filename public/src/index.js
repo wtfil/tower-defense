@@ -4,8 +4,7 @@ import {renderCursor, renderMap, preloadAll} from './core/render';
 import {round, random} from './core/utils';
 import initUnits from './core/units';
 import initMouse from './core/mouse';
-
-const SEGMENT = 32; // TODO do not duplicate with render.js
+import {SEGMENT} from './core/constants';
 
 const map = getFirst();
 const requestAnimationFrame = window.requestAnimationFrame ||
@@ -43,10 +42,14 @@ document.addEventListener('keyup', e => {
 	}
 });
 canvas.addEventListener('click', e => {
+	var point;
 	if (towerToBuild) {
+		point = units.cursorGrid(mouse.get());
+		if (!point.alowed) {
+			return;
+		}
 		units.add(towerToBuild, {
-			x: round(e.clientX, SEGMENT),
-			y: round(e.clientY, SEGMENT),
+			...point,
 			layer: ctx
 		});
 	}
@@ -68,7 +71,7 @@ function loop() {
 	});
 	renderCursor(towerToBuild, {
 		layer: ctx,
-		...mouse.get()
+		...units.cursorGrid(mouse.get())
 	});
 	requestAnimationFrame(loop);
 }

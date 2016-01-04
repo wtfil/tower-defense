@@ -1,8 +1,7 @@
-var objects = require('../objects');
-var {round} = require('./utils');
-var cache = [];
+import {SEGMENT} from './constants';
 
-const SEGMENT = 32;
+var objects = require('../objects');
+var cache = [];
 
 export function render(obj, {x, y, layer, frame = 0, health}) {
 	function done() {
@@ -47,14 +46,12 @@ export function renderMap(map, {layer}) {
 	});
 }
 
-export function renderCursor(obj, {x, y, layer}) {
+export function renderCursor(obj, {x, y, layer, alowed}) {
 	if (!obj) {
 		return;
 	}
-	x = round(x, SEGMENT);
-	y = round(y, SEGMENT);
 	layer.globalAlpha = 0.4;
-	layer.fillStyle = '#00FF00';
+	layer.fillStyle = alowed ? '#00FF00' : '#FF0000';
 	layer.fillRect(x, y, SEGMENT, SEGMENT);
 	render(obj, {layer, x, y});
 }

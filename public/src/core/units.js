@@ -1,5 +1,6 @@
 import Unit from './Unit';
-import {inRange, getAngle, inObject, inSplash} from './utils';
+import {SEGMENT} from './constants';
+import {round, inRange, getAngle, inObject, inSplash} from './utils';
 
 export default function init() {
 	var towers = [];
@@ -112,11 +113,7 @@ export default function init() {
 			}
 		}
 	}
-	function findByCoordinates(coors) {
-		var point = {
-			...coors,
-			config: {width: 0, height: 0} // OMG, MAKE IT SIMPLE
-		};
+	function findByCoordinates(point) {
 		var i;
 		for (i = 0; i < towers.length; i ++) {
 			if (inObject(point, towers[i])) {
@@ -126,5 +123,19 @@ export default function init() {
 		return null;
 	}
 
-	return {add, get, setTargets, fire, collision, findByCoordinates};
+	function cursorGrid({x, y}) {
+		x = round(x, SEGMENT);
+		y = round(y, SEGMENT);
+		var arr = enemies.concat(towers);
+		var point = {x, y};
+		var i;
+		for (i = 0; i < arr.length; i ++) {
+			if (inObject(point, arr[i])) {
+				return {x, y, alowed: false};
+			}
+		}
+		return {x, y, alowed: true};
+	}
+
+	return {add, get, setTargets, fire, collision, findByCoordinates, cursorGrid};
 }
