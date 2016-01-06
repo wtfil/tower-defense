@@ -2,7 +2,7 @@ import {getFirst} from './maps';
 import {unit, arrowTower, cannonTower} from './objects';
 import {renderCursor, renderMap, preloadAll} from './core/render';
 import {round, random} from './core/utils';
-import initUnits from './core/units';
+import initGame from './core/game';
 import initMouse from './core/mouse';
 import {SEGMENT} from './core/constants';
 
@@ -18,21 +18,11 @@ const mouse = initMouse(ctx);
 canvas.width = 640;
 canvas.height = 480;
 
-var units = initUnits();
+var game = initGame(map, ctx);
 var isPause = false;
 var towerToBuild = null;
 
-setInterval(function () {
-	var i;
-	for (i = random(0, 4); i > 0; i --) {
-		units.add(unit, {
-			x: 0 + random(-20, 20),
-			y: 300 + random(-20, 20),
-			layer: ctx
-		});
-	}
-}, 2000);
-
+game.run();
 document.addEventListener('visibilitychange', e => isPause = document.hidden);
 document.addEventListener('keyup', e => {
 	switch (Number(e.keyCode)) {
@@ -44,11 +34,11 @@ document.addEventListener('keyup', e => {
 canvas.addEventListener('click', e => {
 	var point;
 	if (towerToBuild) {
-		point = units.cursorGrid(mouse.get());
+		point = game.cursorGrid(mouse.get());
 		if (!point.alowed) {
 			return;
 		}
-		units.add(towerToBuild, {
+		game.addUnit(towerToBuild, {
 			...point,
 			layer: ctx
 		});
@@ -58,20 +48,20 @@ function loop() {
 	if (isPause) {
 		return;
 	}
-	units.setTargets();
-	units.fire();
-	units.collision();
-	units.get().forEach(item => {
+	game.setTargets();
+	game.fire();
+	game.collision();
+	game.getUnits().forEach(item => {
 		item.clear();
 		item.move();
 	});
-	renderMap(map, {layer: ctx});
-	units.get().forEach(item => {
+	renderMap(map.map, {layer: ctx});
+	game.getUnits().forEach(item => {
 		item.render();
 	});
 	renderCursor(towerToBuild, {
 		layer: ctx,
-		...units.cursorGrid(mouse.get())
+		...game.cursorGrid(mouse.get())
 	});
 	requestAnimationFrame(loop);
 }

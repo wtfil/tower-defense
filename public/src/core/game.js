@@ -1,13 +1,18 @@
 import Unit from './Unit';
 import {SEGMENT} from './constants';
-import {round, inRange, getAngle, inObject, inSplash} from './utils';
+import {random, round, inRange, getAngle, inObject, inSplash} from './utils';
 
-export default function init() {
+export default function init(map, layer) {
+	var waveNumber = 0;
+	var lives = map.lives;
+	var gold = map.gold;
+	var score = 0;
+	var	unitsInWave = 0;
 	var towers = [];
 	var enemies = [];
 	var shots = [];
 
-	function add(config, opts) {
+	function addUnit(config, opts) {
 		var unit = new Unit(config, opts);
 		if (unit.isTower) {
 			towers.push(unit);
@@ -15,7 +20,7 @@ export default function init() {
 			enemies.push(unit);
 		}
 	}
-	function get() {
+	function getUnits() {
 		return towers.concat(enemies).concat(shots);
 	}
 
@@ -98,29 +103,27 @@ export default function init() {
 			if (enemies[i].alive) {
 				alive.push(enemies[i]);
 			} else {
-				clearTarget(enemies[i]);
+				clearUnit(enemies[i]);
 			}
 		}
 		shots = shots.filter(shot => shot.alive);
 		enemies = alive;
 	}
 
-	function clearTarget(target) {
+	function clearUnit(target) {
 		var i;
 		for (i = 0; i < towers.length; i ++) {
 			if (towers[i].target === target) {
 				towers[i].setTarget(null);
 			}
 		}
-	}
-	function findByCoordinates(point) {
-		var i;
-		for (i = 0; i < towers.length; i ++) {
-			if (inObject(point, towers[i])) {
-				return towers[i];
-			}
+		console.log('unitsInWave', unitsInWave);
+		unitsInWave --;
+		if (!unitsInWave) {
+			console.log('WAVE DONE');
+			waveNumber ++;
+			setTimeout(runWave, 5000);
 		}
-		return null;
 	}
 
 	function cursorGrid({x, y}) {
@@ -137,5 +140,34 @@ export default function init() {
 		return {x, y, alowed: true};
 	}
 
-	return {add, get, setTargets, fire, collision, findByCoordinates, cursorGrid};
+	function runWave() {
+		if (waveNumber >= map.waves.length) {
+			return console.log('END GAME');
+		}
+		console.log('run wave', waveNumber);
+		var wave = map.waves[waveNumber];
+		var spawned = 0;
+		var timeRange = 10000 / wave.count;
+		unitsInWave = wave.count;
+		function spawn () {
+			if (spawned >= wave.count) {
+				return;
+			}
+			addUnit(wave.unit, {x: 0, y: 300, layer});
+			spawned ++;
+			setTimeout(spawn, random(timeRange, timeRange * 3));
+		}
+		spawn();
+	}
+	function run() {
+		runWave();
+	}
+	function getStats() {
+		return {lives, score, gold, unitsInWave};
+	}
+
+	return {
+		addUnit, getUnits, setTargets, fire, collision,
+		cursorGrid, run, getStats
+	};
 }
