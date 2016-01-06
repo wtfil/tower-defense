@@ -1,6 +1,6 @@
 import {getFirst} from './maps';
 import {unit, arrowTower, cannonTower} from './objects';
-import {renderCursor, renderMap, preloadAll} from './core/render';
+import {renderUnits, renderCursor, renderMap, preloadAll} from './core/render';
 import {round, random} from './core/utils';
 import initGame from './core/game';
 import initMouse from './core/mouse';
@@ -45,22 +45,21 @@ canvas.addEventListener('click', e => {
 	}
 });
 function loop() {
+	var units = game.getUnits();
+	var renderOpts = {layer: ctx};
 	if (isPause) {
 		return;
 	}
 	game.setTargets();
 	game.fire();
 	game.collision();
-	game.getUnits().forEach(item => {
-		item.clear();
+	units.forEach(item => {
 		item.move();
 	});
-	renderMap(map.map, {layer: ctx});
-	game.getUnits().forEach(item => {
-		item.render();
-	});
+	renderMap(map.map, renderOpts);
+	renderUnits(units, renderOpts);
 	renderCursor(towerToBuild, {
-		layer: ctx,
+		...renderOpts,
 		...game.cursorGrid(mouse.get())
 	});
 	requestAnimationFrame(loop);

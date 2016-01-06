@@ -1,9 +1,10 @@
 import {SEGMENT} from './constants';
 
+const ANIMATION_INTERVAL = 300;
 var objects = require('../objects');
 var cache = [];
 
-export function render(obj, {x, y, layer, frame = 0, health}) {
+export function render(obj, {x, y, layer, time = 0, health}) {
 	function done() {
 		var hp = health / obj.health;
 		layer.imageSmoothingEnabled = false;
@@ -16,6 +17,7 @@ export function render(obj, {x, y, layer, frame = 0, health}) {
 			layer.fillRect(x + hp * obj.width, y, (1 - hp) * obj.width, 2);
 		}
 	}
+	var frame = ~~((Date.now() - time) / ANIMATION_INTERVAL) % obj.textures.length;
 	var url = obj.textures[frame];
 	var img = cache[url];
 	if (!img) {
@@ -54,6 +56,18 @@ export function renderCursor(obj, {x, y, layer, alowed}) {
 	layer.fillStyle = alowed ? '#00FF00' : '#FF0000';
 	layer.fillRect(x, y, SEGMENT, SEGMENT);
 	render(obj, {layer, x, y});
+}
+
+export function renderUnits(units, {layer}) {
+	units.forEach(unit => {
+		render(unit.config, {
+			layer,
+			x: unit.x,
+			y: unit.y,
+			health: unit.health,
+			time: unit.createdAt
+		});
+	});
 }
 
 export function preload(items, cb) {

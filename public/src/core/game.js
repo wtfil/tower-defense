@@ -117,10 +117,8 @@ export default function init(map, layer) {
 				towers[i].setTarget(null);
 			}
 		}
-		console.log('unitsInWave', unitsInWave);
 		unitsInWave --;
 		if (!unitsInWave) {
-			console.log('WAVE DONE');
 			waveNumber ++;
 			setTimeout(runWave, 5000);
 		}
@@ -144,7 +142,6 @@ export default function init(map, layer) {
 		if (waveNumber >= map.waves.length) {
 			return console.log('END GAME');
 		}
-		console.log('run wave', waveNumber);
 		var wave = map.waves[waveNumber];
 		var spawned = 0;
 		var timeRange = 10000 / wave.count;
