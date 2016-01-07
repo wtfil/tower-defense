@@ -19,7 +19,7 @@ ctx.imageSmoothingEnabled = false;
 canvas.width = 640;
 canvas.height = 480;
 
-var game = initGame(map, ctx);
+var game = initGame(map);
 var isPause = false;
 var towerToBuild = null;
 

@@ -2,7 +2,7 @@ import Unit from './Unit';
 import {SEGMENT} from './constants';
 import {random, round, inRange, getAngle, inObject, inSplash} from './utils';
 
-export default function init(map, layer) {
+export default function init(map) {
 	var waveNumber = 0;
 	var lives = map.lives;
 	var gold = map.gold;
@@ -69,8 +69,7 @@ export default function init(map, layer) {
 				x: tower.x,
 				y: tower.y,
 				target: tower.target,
-				angle: getAngle(tower, tower.target),
-				layer: tower.layer
+				angle: getAngle(tower, tower.target)
 			}));
 		}
 	}
