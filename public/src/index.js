@@ -1,6 +1,6 @@
 import {getFirst} from './maps';
 import {unit, arrowTower, cannonTower} from './objects';
-import {renderUnits, renderCursor, renderMap, preloadAll} from './core/render';
+import {renderStats, renderUnits, renderCursor, renderMap, preloadAll} from './core/render';
 import {round, random} from './core/utils';
 import initGame from './core/game';
 import initMouse from './core/mouse';
@@ -15,6 +15,7 @@ const requestAnimationFrame = window.requestAnimationFrame ||
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
 const mouse = initMouse(ctx);
+ctx.imageSmoothingEnabled = false;
 canvas.width = 640;
 canvas.height = 480;
 
@@ -44,25 +45,33 @@ canvas.addEventListener('click', e => {
 		});
 	}
 });
-function loop() {
-	var units = game.getUnits();
-	var renderOpts = {layer: ctx};
+
+function gameLoop() {
 	if (isPause) {
-		return;
+		return setTimeout(gameLoop, 1000 / 60);
 	}
 	game.setTargets();
 	game.fire();
 	game.collision();
-	units.forEach(item => {
+	game.getUnits().forEach(item => {
 		item.move();
 	});
+	setTimeout(gameLoop, 1000 / 60);
+}
+
+function renderLoop() {
+	var renderOpts = {layer: ctx};
 	renderMap(map.map, renderOpts);
-	renderUnits(units, renderOpts);
+	renderUnits(game.getUnits(), renderOpts);
+	renderStats(game.getStats(), renderOpts);
 	renderCursor(towerToBuild, {
 		...renderOpts,
 		...game.cursorGrid(mouse.get())
 	});
-	requestAnimationFrame(loop);
+	requestAnimationFrame(renderLoop);
 }
 
-preloadAll(loop);
+preloadAll(() => {
+	gameLoop();
+	renderLoop();
+});

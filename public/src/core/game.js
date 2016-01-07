@@ -11,6 +11,20 @@ export default function init(map, layer) {
 	var towers = [];
 	var enemies = [];
 	var shots = [];
+	var bounds = {x: 0, y: 0, config: {
+		width: map.size.width * SEGMENT,
+		height: map.size.height * SEGMENT
+	}};
+
+	function setPathes() {
+		enemies.forEach(item => {
+			item.setPath([
+				{x: SEGMENT * 5, y: SEGMENT * 7},
+				{x: SEGMENT * 5, y: SEGMENT * 4},
+				{x: SEGMENT * 20, y: SEGMENT * 4}
+			]);
+		});
+	}
 
 	function addUnit(config, opts) {
 		var unit = new Unit(config, opts);
@@ -18,6 +32,7 @@ export default function init(map, layer) {
 			towers.push(unit);
 		} else {
 			enemies.push(unit);
+			setPathes();
 		}
 	}
 	function getUnits() {
@@ -75,6 +90,13 @@ export default function init(map, layer) {
 						break;
 					}
 				}
+			}
+		}
+		clearDeadObjects();
+		for (i = 0; i < enemies.length; i ++) {
+			if (!inObject(enemies[i], bounds)) {
+				lives --;
+				enemies[i].die();
 			}
 		}
 		clearDeadObjects();
@@ -150,7 +172,10 @@ export default function init(map, layer) {
 			if (spawned >= wave.count) {
 				return;
 			}
-			addUnit(wave.unit, {x: 0, y: 300, layer});
+			addUnit(wave.unit, {
+				x: map.spawn.x * SEGMENT,
+				y: map.spawn.y * SEGMENT
+			});
 			spawned ++;
 			setTimeout(spawn, random(timeRange, timeRange * 3));
 		}
@@ -160,7 +185,7 @@ export default function init(map, layer) {
 		runWave();
 	}
 	function getStats() {
-		return {lives, score, gold, unitsInWave};
+		return {wave: waveNumber + 1, lives, score, gold, unitsInWave};
 	}
 
 	return {

@@ -1,5 +1,4 @@
-import {render} from './render';
-import {getAngle} from './utils';
+import {getAngle, round} from './utils';
 
 function Unit(config, {x, y, target}) {
 	this.config = config;
@@ -10,12 +9,27 @@ function Unit(config, {x, y, target}) {
 	this.alive = true;
 	this.isTower = config.type === 'tower';
 	this.health = config.health;
-	this.target = target;
+	this.target = target || null;
+	this.path = null;
 	this.angle = target ? getAngle(this, target) : 0;
 }
+Unit.prototype.setPath = function (path) {
+	if (this.path) {
+		return; // Ofcourse this will be removed. But first I need to implement A*
+	}
+	this.path = path;
+};
 Unit.prototype.move = function () {
 	if (this.config.homing && this.target) {
 		this.angle = getAngle(this, this.target);
+	} else if (this.path) {
+		this.angle = getAngle(this, this.path[0]);
+		if (!round(this.x - this.path[0].x, 5) && !round(this.y - this.path[0].y, 5)) {
+			this.path = this.path.slice(1);
+			if (!this.path.length) {
+				this.path = null;
+			}
+		}
 	}
 	this.x += this.config.movementSpeed * Math.cos(this.angle);
 	this.y += this.config.movementSpeed * Math.sin(this.angle);
