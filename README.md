@@ -7,3 +7,7 @@ Classic Tower Defence game built on top of HTML5 canvas
     npm install
     open public/index.html
     npm start
+
+##Deploy
+
+	npm run deploy

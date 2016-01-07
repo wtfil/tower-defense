@@ -3,11 +3,17 @@ var gulp = require('gulp');
 var gutil = require('gulp-util');
 var fs = require('fs');
 var watchify = require('watchify');
+var ghPages = require('gulp-gh-pages');
+var uglify = require('gulp-uglify');
+var buffer = require('vinyl-buffer');
+var source = require('vinyl-source-stream');
 
 var files = {
     js: {
         src: './public/src/index.js',
-        dest: './public/build/index.js'
+        dest: './public/build/index.js',
+        name: 'index.js',
+        destFolder: './public/build'
     }
 };
 
@@ -15,7 +21,10 @@ gulp.task('js', function () {
     return browserify(files.js.src)
         .transform('babelify')
         .bundle()
-        .pipe(fs.createWriteStream(files.js.dest))
+        .pipe(source(files.js.name))
+        .pipe(buffer())
+        .pipe(uglify())
+        .pipe(gulp.dest(files.js.destFolder));
 });
 
 gulp.task('js-watch', function () {

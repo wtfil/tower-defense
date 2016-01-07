@@ -83,7 +83,7 @@ export function renderStats(stats, {layer}) {
 	renderText(`lives: ${stats.lives}`, {x: 10, y: 40, layer});
 	renderText(`gold:  ${stats.gold}`, {x: 10, y: 60, layer});
 	renderText(`score: ${stats.score}`, {x: 10, y: 80, layer});
-	renderText(`use 1 or 2 to build the tower`, {x: 140, y: 20, layer});
+	renderText(`Use 1 or 2 to build the tower`, {x: 140, y: 20, layer});
 }
 
 export function preload(items, cb) {
