@@ -1,8 +1,9 @@
 import Unit from './Unit';
 import {SEGMENT} from './constants';
+import astar from './algorithms/astar';
 import {random, round, inRange, getAngle, inObject, inSplash} from './utils';
 
-export default function init(map, layer) {
+export default function init(map) {
 	var waveNumber = 0;
 	var lives = map.lives;
 	var gold = map.gold;
@@ -15,21 +16,38 @@ export default function init(map, layer) {
 		width: map.size.width * SEGMENT,
 		height: map.size.height * SEGMENT
 	}};
+	var mapObjects = new Array(map.size.height).join().split(',').map(line => {
+		return new Array(map.size.width).join().split(',').map(Number);
+	});
+
+	function coordsToGrid(point) {
+		return {
+			x: Math.floor(point.x / SEGMENT),
+			y: Math.floor(point.y / SEGMENT)
+		}
+	}
 
 	function setPathes() {
 		enemies.forEach(item => {
-			item.setPath([
-				{x: SEGMENT * 5, y: SEGMENT * 7},
-				{x: SEGMENT * 5, y: SEGMENT * 4},
-				{x: SEGMENT * 20, y: SEGMENT * 4}
-			]);
+			var path = astar(
+				coordsToGrid(item),
+				map.finish,
+				mapObjects
+			).slice(1).map(point => ({
+				x: point.x * SEGMENT,
+				y: point.y * SEGMENT
+			}));
+			item.setPath(path);
 		});
 	}
 
 	function addUnit(config, opts) {
 		var unit = new Unit(config, opts);
+		var grid = coordsToGrid(opts);
 		if (unit.isTower) {
+			mapObjects[grid.y][grid.x] = 1;
 			towers.push(unit);
+			setPathes();
 		} else {
 			enemies.push(unit);
 			setPathes();
@@ -69,8 +87,7 @@ export default function init(map, layer) {
 				x: tower.x,
 				y: tower.y,
 				target: tower.target,
-				angle: getAngle(tower, tower.target),
-				layer: tower.layer
+				angle: getAngle(tower, tower.target)
 			}));
 		}
 	}
@@ -151,13 +168,19 @@ export default function init(map, layer) {
 		y = round(y, SEGMENT);
 		var arr = enemies.concat(towers);
 		var point = {x, y};
-		var i;
+		var grid = coordsToGrid(point);
+		var i, alowed, newMapObjexts;
 		for (i = 0; i < arr.length; i ++) {
 			if (inObject(point, arr[i])) {
 				return {x, y, alowed: false};
 			}
 		}
-		return {x, y, alowed: true};
+		newMapObjexts = mapObjects.slice();
+		newMapObjexts[grid.y] = mapObjects[grid.y].slice();
+		newMapObjexts[grid.y][grid.x] = 1;
+		alowed = !!astar(map.spawn, map.finish, newMapObjexts);
+
+		return {x, y, alowed};
 	}
 
 	function runWave() {

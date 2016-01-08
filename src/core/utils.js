@@ -34,6 +34,6 @@ export function random(from, to) {
 	return Math.round(Math.random() * (to - from)) + from;
 }
 
-export function round(num, accuracy) {
+export function round(num, accuracy = 1) {
 	return num - num % accuracy;
 }
