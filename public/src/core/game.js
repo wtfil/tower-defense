@@ -1,5 +1,6 @@
 import Unit from './Unit';
 import {SEGMENT} from './constants';
+import astar from './algorithms/astar';
 import {random, round, inRange, getAngle, inObject, inSplash} from './utils';
 
 export default function init(map) {

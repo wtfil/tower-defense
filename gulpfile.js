@@ -7,6 +7,7 @@ var ghPages = require('gulp-gh-pages');
 var uglify = require('gulp-uglify');
 var buffer = require('vinyl-buffer');
 var source = require('vinyl-source-stream');
+var server = require('http-server');
 
 var files = {
     js: {
@@ -51,8 +52,14 @@ gulp.task('js-watch', function () {
     rebundle();
 });
 
+gulp.task('server', function (cb) {
+	var port = process.env.NODE_PORT || 3000;
+	server.createServer().listen(port, cb);
+	gutil.log('Server started at ' + gutil.colors.green('http://127.0.0.1:' + port));
+});
+
 gulp.task('deploy', ['js'], function () {
 	return gulp.src('./public/**/*').pipe(ghPages());
 });
 
-gulp.task('dev', ['js-watch']);
+gulp.task('dev', ['server', 'js-watch']);

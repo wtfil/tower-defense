@@ -1,7 +1,3 @@
-require('babel/register');
-require('chai').should();
-var assert = require('assert');
-
 describe('objects', () => {
 	var dir = __dirname + '/../public/src/objects';
 	var objects = require(dir);
