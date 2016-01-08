@@ -17,7 +17,7 @@ const ctx = canvas.getContext('2d');
 const mouse = initMouse(ctx);
 ctx.imageSmoothingEnabled = false;
 canvas.width = 640;
-canvas.height = 480;
+canvas.height = 320;
 
 var game = initGame(map);
 var isPause = false;

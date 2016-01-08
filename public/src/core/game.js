@@ -175,6 +175,9 @@ export default function init(map) {
 				return {x, y, alowed: false};
 			}
 		}
+		if (grid.x < 0 || grid.x >= map.size.width || grid.y < 0 || grid.y >= map.size.height) {
+			return {x, y, alowed: false};
+		}
 		newMapObjexts = mapObjects.slice();
 		newMapObjexts[grid.y] = mapObjects[grid.y].slice();
 		newMapObjexts[grid.y][grid.x] = 1;
