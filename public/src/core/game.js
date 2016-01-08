@@ -16,14 +16,27 @@ export default function init(map) {
 		width: map.size.width * SEGMENT,
 		height: map.size.height * SEGMENT
 	}};
+	var mapObjects = new Array(map.size.height).join().split(',').map(line => {
+		return new Array(map.size.width).join().split(',').map(Number);
+	});
 
 	function setPathes() {
 		enemies.forEach(item => {
-			item.setPath([
-				{x: SEGMENT * 5, y: SEGMENT * 7},
-				{x: SEGMENT * 5, y: SEGMENT * 4},
-				{x: SEGMENT * 20, y: SEGMENT * 4}
-			]);
+			if (item.path) {
+				return;
+			}
+			var path = astar(
+				{
+					x: Math.floor(item.x / SEGMENT),
+					y: Math.floor(item.y / SEGMENT)
+				},
+				map.finish,
+				mapObjects
+			).slice(1).map(point => ({
+				x: point.x * SEGMENT,
+				y: point.y * SEGMENT
+			}));
+			item.setPath(path);
 		});
 	}
 

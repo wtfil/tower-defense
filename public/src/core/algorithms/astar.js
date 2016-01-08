@@ -11,46 +11,41 @@ function createPath(start, end, pathes) {
 export default function astar(start, end, map) {
 	var toVisit = [start];
 	var visited = {};
+	var planned = {};
 	var pathes = {};
 	var score = {[getKey(start)]: 0};
-	var i, x, y, minScore, point, current, pointScore, key, distance;
-
+	var width = map[0].length;
+	var height = map.length;
+	var i, x, y, current, currentScore, distance, key, neighbors, neighbor;
 	while (toVisit.length) {
-		current = toVisit[0];
-		minScore = score[getKey(current)];
-		for (i = 0; i < toVisit.length; i ++) {
-			point = toVisit[i];
-			pointScore = score[getKey(point)];
-			if (pointScore < minScore) {
-				minScore = pointScore;
-				current = point;
-			}
-		}
+		current = toVisit.shift();
 		if (current.x === end.x && current.y === end.y) {
 			return createPath(start, end, pathes).reverse();
 		}
-
 		key = getKey(current);
-		toVisit.splice(toVisit.indexOf(current), 1);
+		currentScore = score[key];
 		visited[key] = true;
 
-		for (x = current.x - 1; x <= current.x + 1; x ++) {
-			for (y = current.y - 1; y <= current.y + 1; y ++) {
-				if ((abs(x - current.x) + abs(y - current.y) > 1) || !(y in map) || !(x in map[y])) {
-					continue;
-				}
-				key = x + ',' + y;
-				distance = minScore + (map[y][x] ? Infinity : 1);
-				if (!score[key] || distance < score[key]) {
-					score[key] = distance;
-					pathes[key] = current;
-				}
-				if (!visited[key]) {
-					toVisit.push({x, y});
-				}
+		neighbors = [
+			{x: current.x - 1, y: current.y},
+			{x: current.x + 1, y: current.y},
+			{x: current.x, y: current.y - 1},
+			{x: current.x, y: current.y + 1}
+		];
+		for (i = 0; i < 4; i ++) {
+			neighbor = neighbors[i];
+			key = getKey(neighbor);
+			if (planned[key] || neighbor.x < 0 || neighbor.x >= width || neighbor.y < 0 || neighbor.y >= height  || map[neighbor.y][neighbor.x]) {
+				continue;
 			}
+			distance = currentScore + 1;
+			if (!(key in score) || distance < score[key]) {
+				score[key] = distance;
+				pathes[key] = current;
+			}
+			planned[key] = true;
+			toVisit.push(neighbor);
 		}
-
 	}
 	return null;
 }

@@ -13,12 +13,6 @@ function Unit(config, {x, y, target}) {
 	this.path = null;
 	this.angle = target ? getAngle(this, target) : 0;
 }
-Unit.prototype.setPath = function (path) {
-	if (this.path) {
-		return; // Ofcourse this will be removed. But first I need to implement A*
-	}
-	this.path = path;
-};
 Unit.prototype.move = function () {
 	if (this.config.homing && this.target) {
 		this.angle = getAngle(this, this.target);
@@ -33,6 +27,9 @@ Unit.prototype.move = function () {
 	}
 	this.x += this.config.movementSpeed * Math.cos(this.angle);
 	this.y += this.config.movementSpeed * Math.sin(this.angle);
+};
+Unit.prototype.setPath = function (path) {
+	this.path = path;
 };
 Unit.prototype.setTarget = function (target) {
 	this.target = target;
