@@ -1,6 +1,7 @@
 import {SEGMENT} from './constants';
 
 const ANIMATION_INTERVAL = 300;
+const FAST_ANIMATION_INTERVAL = 60;
 var objects = require('../objects');
 var cache = [];
 
@@ -17,7 +18,8 @@ export function render(obj, {x, y, layer, time = 0, health}) {
 			layer.fillRect(x + hp * obj.width, y, (1 - hp) * obj.width, 2);
 		}
 	}
-	var frame = ~~((Date.now() - time) / ANIMATION_INTERVAL) % obj.textures.length;
+	var interval = obj.fastAnimation ? FAST_ANIMATION_INTERVAL: ANIMATION_INTERVAL;
+	var frame = ~~((Date.now() - time) / interval) % obj.textures.length;
 	var url = obj.textures[frame];
 	var img = cache[url];
 	if (!img) {
