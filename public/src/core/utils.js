@@ -25,8 +25,8 @@ export function inObject(a, b) {
 }
 
 export function inSplash(shot, target) {
-	return sqr(shot.x - target.x - target.config.width) +
-		sqr(shot.y - target.y - target.config.height) <
+	return sqr(shot.x - target.x - target.config.width / 2) +
+		sqr(shot.y - target.y - target.config.height / 2) <
 		sqr(shot.config.splash);
 }
 

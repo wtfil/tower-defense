@@ -12,6 +12,7 @@ export default function init(map) {
 	var towers = [];
 	var enemies = [];
 	var shots = [];
+	var diedObjects = [];
 	var bounds = {x: 0, y: 0, config: {
 		width: map.size.width * SEGMENT,
 		height: map.size.height * SEGMENT
@@ -54,7 +55,7 @@ export default function init(map) {
 		}
 	}
 	function getUnits() {
-		return towers.concat(enemies).concat(shots);
+		return towers.concat(enemies).concat(shots).concat(diedObjects);
 	}
 
 	function setTargets() {
@@ -130,6 +131,12 @@ export default function init(map) {
 			attackSingle(shot, target);
 		}
 		shot.die();
+		if (shot.config.death) {
+			diedObjects.push(new Unit(shot.config.death, {
+				x: shot.x,
+				y: shot.y
+			}));
+		}
 	}
 
 	function attackSingle(shot, target) {
@@ -137,6 +144,7 @@ export default function init(map) {
 	}
 
 	function clearDeadObjects() {
+		var now = Date.now();
 		var alive = [], i;
 		for(i = 0; i < enemies.length; i ++) {
 			if (enemies[i].alive) {
@@ -146,6 +154,10 @@ export default function init(map) {
 			}
 		}
 		shots = shots.filter(shot => shot.alive);
+		diedObjects = diedObjects.filter(item => {
+			return item.config.corpse ||
+				((item.config.textures.length * 60 + item.createdAt) > now);
+		});
 		enemies = alive;
 	}
 

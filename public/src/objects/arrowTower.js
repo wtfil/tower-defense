@@ -13,6 +13,18 @@ export default {
 		homing: true,
 		movementSpeed: 4,
 		width: 10,
-		height: 10
+		height: 10,
+		death: {
+			width: 16,
+			height: 16,
+			movementSpeed: 0, // TODO remove
+			corpse: 0,
+			fastAnimation: true,
+			textures: [
+				'images/explosion_1_1.png',
+				'images/explosion_1_2.png',
+				'images/explosion_1_3.png'
+			]
+		}
 	}
 };
