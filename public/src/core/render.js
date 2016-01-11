@@ -51,9 +51,6 @@ export function renderMap(map, {layer}) {
 }
 
 export function renderCursor(obj, {x, y, layer, alowed}) {
-	if (!obj) {
-		return;
-	}
 	layer.globalAlpha = 0.4;
 	layer.fillStyle = alowed ? '#00FF00' : '#FF0000';
 	layer.fillRect(x, y, SEGMENT, SEGMENT);

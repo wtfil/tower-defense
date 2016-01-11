@@ -64,10 +64,12 @@ function renderLoop() {
 	renderMap(map.map, renderOpts);
 	renderUnits(game.getUnits(), renderOpts);
 	renderStats(game.getStats(), renderOpts);
-	renderCursor(towerToBuild, {
-		...renderOpts,
-		...game.cursorGrid(mouse.get())
-	});
+	if (towerToBuild) {
+		renderCursor(towerToBuild, {
+			...renderOpts,
+			...game.cursorGrid(mouse.get())
+		});
+	}
 	requestAnimationFrame(renderLoop);
 }
 

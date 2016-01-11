@@ -20,6 +20,7 @@ export default function init(map) {
 	var mapObjects = new Array(map.size.height).join().split(',').map(line => {
 		return new Array(map.size.width).join().split(',').map(Number);
 	});
+	var cachedAstarGridResults = {};
 
 	function coordsToGrid(point) {
 		return {
@@ -48,6 +49,7 @@ export default function init(map) {
 		if (unit.isTower) {
 			mapObjects[grid.y][grid.x] = 1;
 			towers.push(unit);
+			cachedAstarGridResults = {};
 			setPathes();
 		} else {
 			enemies.push(unit);
@@ -175,13 +177,25 @@ export default function init(map) {
 		}
 	}
 
-	function cursorGrid({x, y}) {
-		x = round(x, SEGMENT);
-		y = round(y, SEGMENT);
+	function cachedAstarGrid(grid) {
+		var key = grid.x + ',' + grid.y;
+		var newMapObjexts;
+		if (cachedAstarGridResults[key]) {
+			return cachedAstarGridResults[key];
+		}
+		newMapObjexts = mapObjects.slice();
+		newMapObjexts[grid.y] = mapObjects[grid.y].slice();
+		newMapObjexts[grid.y][grid.x] = 1;
+		cachedAstarGridResults[key] = !!astar(map.spawn, map.finish, newMapObjexts);
+		return cachedAstarGridResults[key];
+	}
+
+	function cursorGrid(point) {
 		var arr = enemies.concat(towers);
-		var point = {x, y};
 		var grid = coordsToGrid(point);
-		var i, alowed, newMapObjexts;
+		var x = grid.x * SEGMENT;
+		var y = grid.y * SEGMENT;
+		var i;
 		for (i = 0; i < arr.length; i ++) {
 			if (inObject(point, arr[i])) {
 				return {x, y, alowed: false};
@@ -190,12 +204,8 @@ export default function init(map) {
 		if (grid.x < 0 || grid.x >= map.size.width || grid.y < 0 || grid.y >= map.size.height) {
 			return {x, y, alowed: false};
 		}
-		newMapObjexts = mapObjects.slice();
-		newMapObjexts[grid.y] = mapObjects[grid.y].slice();
-		newMapObjexts[grid.y][grid.x] = 1;
-		alowed = !!astar(map.spawn, map.finish, newMapObjexts);
 
-		return {x, y, alowed};
+		return {x, y, alowed: cachedAstarGrid(grid)};
 	}
 
 	function runWave() {
