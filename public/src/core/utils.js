@@ -4,6 +4,9 @@ const sqr = x => x * x;
 export function inRange(t, e) {
 	return sqr(e.x - t.x) + sqr(e.y - t.y) < sqr(t.config.range);
 }
+export function inRangeDiff(t, e) {
+	return sqr(e.x - t.x) + sqr(e.y - t.y) - sqr(t.config.range);
+}
 
 export function getAngle(a, b) {
 	var dx = b.x - a.x;

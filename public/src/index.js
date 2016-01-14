@@ -39,7 +39,7 @@ towers.forEach(tower => {
 canvas.addEventListener('click', e => {
 	var point;
 	if (towerToBuild) {
-		point = game.cursorGrid(mouse.get());
+		point = game.buildAtributes(towerToBuild, mouse.get());
 		if (!point.alowed) {
 			return;
 		}
@@ -68,7 +68,7 @@ function renderLoop() {
 	if (towerToBuild) {
 		renderCursor(towerToBuild, {
 			...renderOpts,
-			...game.cursorGrid(mouse.get())
+			...game.buildAtributes(towerToBuild, mouse.get())
 		});
 	}
 	requestAnimationFrame(renderLoop);

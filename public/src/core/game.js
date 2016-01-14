@@ -1,7 +1,7 @@
 import Unit from './Unit';
 import {SEGMENT} from './constants';
 import astar from './algorithms/astar';
-import {random, round, inRange, getAngle, inObject, inSplash} from './utils';
+import {inRangeDiff, random, round, inRange, getAngle, inObject, inSplash} from './utils';
 
 export default function init(map) {
 	var waveNumber = 0;
@@ -50,6 +50,7 @@ export default function init(map) {
 		towers.push(new Unit(config, opts));
 		mapObjects[grid.y][grid.x] = 1;
 		cachedAstarGridResults = {};
+		gold -= config.price;
 		setPathes();
 	}
 
@@ -63,7 +64,7 @@ export default function init(map) {
 	}
 
 	function setTargets() {
-		var i, j, tower, enemy;
+		var i, j, tower, enemy, closest, minRange, diff;
 		for (i = 0; i < towers.length; i ++) {
 			tower = towers[i];
 			enemy = tower.target;
@@ -73,10 +74,17 @@ export default function init(map) {
 				}
 				tower.setTarget(null);
 			}
+			minRange = Infinity;
+			closest = null;
 			for (j = 0; j < enemies.length; j ++) {
 				enemy = enemies[j];
-				if (inRange(tower, enemy)) {
-					tower.setTarget(enemy);
+				diff = inRangeDiff(tower, enemy);
+				if (diff < 0 && diff < minRange) {
+					closest = enemy;
+					minRange = diff;
+				}
+				if (closest) {
+					tower.setTarget(closest);
 				}
 			}
 		}
@@ -172,6 +180,7 @@ export default function init(map) {
 				towers[i].setTarget(null);
 			}
 		}
+		gold += target.config.bounty;
 		unitsInWave --;
 		if (!unitsInWave) {
 			waveNumber ++;
@@ -192,12 +201,15 @@ export default function init(map) {
 		return cachedAstarGridResults[key];
 	}
 
-	function cursorGrid(point) {
+	function buildAtributes(config, point) {
 		var arr = enemies.concat(towers);
 		var grid = coordsToGrid(point);
 		var x = grid.x * SEGMENT;
 		var y = grid.y * SEGMENT;
 		var i;
+		if (config.price > gold) {
+			return {x, y, alowed: false};
+		}
 		for (i = 0; i < arr.length; i ++) {
 			if (inObject(point, arr[i])) {
 				return {x, y, alowed: false};
@@ -216,7 +228,6 @@ export default function init(map) {
 		}
 		var wave = map.waves[waveNumber];
 		var spawned = 0;
-		var timeRange = 10000 / wave.count;
 		unitsInWave = wave.count;
 		function spawn () {
 			if (spawned >= wave.count) {
@@ -227,7 +238,7 @@ export default function init(map) {
 				y: map.spawn.y * SEGMENT
 			});
 			spawned ++;
-			setTimeout(spawn, random(timeRange, timeRange * 3));
+			setTimeout(spawn, 3000);
 		}
 		spawn();
 	}
@@ -240,6 +251,6 @@ export default function init(map) {
 
 	return {
 		buildTower, addUnit, getUnits, setTargets, fire, collision,
-		cursorGrid, run, getStats
+		buildAtributes, run, getStats
 	};
 }
