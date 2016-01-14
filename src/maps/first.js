@@ -14,7 +14,7 @@ export default {
 		y: 5
 	},
 	waves: [
-		[1, 10],
+		[1, 3],
 		[1, 20]
 	],
 	map: `

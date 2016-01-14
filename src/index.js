@@ -1,6 +1,6 @@
 import {getFirst} from './maps';
-import {unit, arrowTower, cannonTower} from './objects';
-import {renderStats, renderUnits, renderCursor, renderMap, preloadAll} from './core/render';
+import * as objects from './objects';
+import {renderPanel, renderStats, renderUnits, renderCursor, renderMap, preloadAll} from './core/render';
 import {round, random} from './core/utils';
 import initGame from './core/game';
 import initMouse from './core/mouse';
@@ -15,6 +15,7 @@ const requestAnimationFrame = window.requestAnimationFrame ||
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
 const mouse = initMouse(ctx);
+const towers = Object.keys(objects).map(key => objects[key]).filter(item => item.type === 'tower');
 ctx.imageSmoothingEnabled = false;
 canvas.width = 640;
 canvas.height = 320;
@@ -24,25 +25,25 @@ var isPause = false;
 var towerToBuild = null;
 
 game.run();
+renderPanel(document.querySelector('[data-panel]'));
 document.addEventListener('visibilitychange', e => isPause = document.hidden);
-document.addEventListener('keyup', e => {
-	switch (Number(e.keyCode)) {
-		case 49: towerToBuild = arrowTower; break;
-		case 50: towerToBuild = cannonTower; break;
-		default: towerToBuild = null;
-	}
+document.addEventListener('contextmenu', e => {
+	e.preventDefault();
+	towerToBuild = null
+});
+towers.forEach(tower => {
+	document.querySelector(`[data-tower="${tower.name}"]`).addEventListener('click', e => {
+		towerToBuild = tower;
+	});
 });
 canvas.addEventListener('click', e => {
 	var point;
 	if (towerToBuild) {
-		point = game.cursorGrid(mouse.get());
+		point = game.buildAtributes(towerToBuild, mouse.get());
 		if (!point.alowed) {
 			return;
 		}
-		game.addUnit(towerToBuild, {
-			...point,
-			layer: ctx
-		});
+		game.buildTower(towerToBuild, point);
 	}
 });
 
@@ -64,10 +65,12 @@ function renderLoop() {
 	renderMap(map.map, renderOpts);
 	renderUnits(game.getUnits(), renderOpts);
 	renderStats(game.getStats(), renderOpts);
-	renderCursor(towerToBuild, {
-		...renderOpts,
-		...game.cursorGrid(mouse.get())
-	});
+	if (towerToBuild) {
+		renderCursor(towerToBuild, {
+			...renderOpts,
+			...game.buildAtributes(towerToBuild, mouse.get())
+		});
+	}
 	requestAnimationFrame(renderLoop);
 }
 
