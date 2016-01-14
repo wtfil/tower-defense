@@ -82,7 +82,21 @@ export function renderStats(stats, {layer}) {
 	renderText(`lives: ${stats.lives}`, {x: 10, y: 40, layer});
 	renderText(`gold:  ${stats.gold}`, {x: 10, y: 60, layer});
 	renderText(`score: ${stats.score}`, {x: 10, y: 80, layer});
-	renderText(`Use 1 or 2 to build the tower`, {x: 140, y: 20, layer});
+}
+
+export function renderPanel(elem) {
+	Object.keys(objects)
+		.map(key => objects[key])
+		.filter(item => item.type === 'tower')
+		.forEach(item => {
+			var node = document.createElement('img');
+			node.src = item.textures[0];
+			node.classList.add('panel-tower');
+			node.dataset.tower = item.name;
+			node.width = item.width;
+			node.height = item.height;
+			elem.appendChild(node);
+		});
 }
 
 export function preload(items, cb) {

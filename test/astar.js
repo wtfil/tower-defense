@@ -92,7 +92,36 @@ describe('A*', () => {
 		]);
 	});
 
-	it('should work fast even with big map', () => {
+	it('two ways', () => {
+		const map = [
+			[0, 0, 0, 1, 0, 0],
+			[0, 0, 0, 1, 0, 0],
+			[0, 1, 0, 1, 0, 0],
+			[0, 1, 0, 1, 0, 0],
+			[0, 1, 0, 1, 0, 0],
+			[0, 1, 0, 1, 0, 0],
+			[0, 0, 0, 0, 0, 0]
+		];
+		const start = {x: 0, y: 3};
+		const end = {x: 5, y: 3};
+		const path = astar(start, end, map);
+		expect(path).to.be.deep.equal([
+			{x: 0, y: 3},
+			{x: 0, y: 4},
+			{x: 0, y: 5},
+			{x: 0, y: 6},
+			{x: 1, y: 6},
+			{x: 2, y: 6},
+			{x: 3, y: 6},
+			{x: 4, y: 6},
+			{x: 5, y: 6},
+			{x: 5, y: 5},
+			{x: 5, y: 4},
+			{x: 5, y: 3}
+		]);
+	});
+
+	describe('should work fast even with big map', () => {
 		const width = 20;
 		const height = 20;
 		const map = new Array(height).join().split(',').map(line => {
@@ -103,7 +132,8 @@ describe('A*', () => {
 		const time = Date.now();
 		const path = astar(start, end, map);
 		const dt = Date.now() - time;
-		console.log(dt, 'ms');
-		expect(dt).to.below(100);
+		it(dt + ' ms ', () => {
+			expect(dt).to.below(10);
+		});
 	});
 });

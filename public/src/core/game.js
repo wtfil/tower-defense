@@ -30,31 +30,33 @@ export default function init(map) {
 	}
 
 	function setPathes() {
-		enemies.forEach(item => {
-			var path = astar(
-				coordsToGrid(item),
-				map.finish,
-				mapObjects
-			).slice(1).map(point => ({
-				x: point.x * SEGMENT,
-				y: point.y * SEGMENT
-			}));
-			item.setPath(path);
-		});
+		enemies.forEach(setPathToUnit);
+	}
+
+	function setPathToUnit(unit) {
+		var path = astar(
+			coordsToGrid(unit),
+			map.finish,
+			mapObjects
+		).slice(1).map(point => ({
+			x: point.x * SEGMENT,
+			y: point.y * SEGMENT
+		}));
+		unit.setPath(path);
+	}
+
+	function buildTower(config, opts) {
+		var grid = coordsToGrid(opts);
+		towers.push(new Unit(config, opts));
+		mapObjects[grid.y][grid.x] = 1;
+		cachedAstarGridResults = {};
+		setPathes();
 	}
 
 	function addUnit(config, opts) {
 		var unit = new Unit(config, opts);
-		var grid = coordsToGrid(opts);
-		if (unit.isTower) {
-			mapObjects[grid.y][grid.x] = 1;
-			towers.push(unit);
-			cachedAstarGridResults = {};
-			setPathes();
-		} else {
-			enemies.push(unit);
-			setPathes();
-		}
+		enemies.push(unit);
+		setPathToUnit(unit);
 	}
 	function getUnits() {
 		return towers.concat(enemies).concat(shots).concat(diedObjects);
@@ -237,7 +239,7 @@ export default function init(map) {
 	}
 
 	return {
-		addUnit, getUnits, setTargets, fire, collision,
+		buildTower, addUnit, getUnits, setTargets, fire, collision,
 		cursorGrid, run, getStats
 	};
 }

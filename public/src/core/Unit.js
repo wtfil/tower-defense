@@ -7,7 +7,6 @@ function Unit(config, {x, y, target}) {
 	this.createdAt = Date.now();
 	this.lastShotAt = 0;
 	this.alive = true;
-	this.isTower = config.type === 'tower';
 	this.health = config.health;
 	this.target = target || null;
 	this.path = null;
