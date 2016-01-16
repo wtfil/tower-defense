@@ -51,6 +51,12 @@ Unit.prototype.fire = function () {
 Unit.prototype.die = function () {
 	this.alive = false;
 	this.health = 0;
+	this.bounty = this.config.bounty;
+};
+Unit.prototype.dieWithoutBounty = function () {
+	this.alive = false;
+	this.health = 0;
+	this.bounty = 0;
 };
 
 export default Unit;
