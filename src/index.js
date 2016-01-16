@@ -62,6 +62,7 @@ function gameLoop() {
 
 function renderLoop() {
 	var renderOpts = {layer: ctx};
+	ctx.clearRect(0, 0, 1000, 1000);
 	renderMap(map.map, renderOpts);
 	renderUnits(game.getUnits(), renderOpts);
 	renderStats(game.getStats(), renderOpts);
