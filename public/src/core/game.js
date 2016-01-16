@@ -13,6 +13,7 @@ export default function init(map) {
 	var enemies = [];
 	var shots = [];
 	var diedObjects = [];
+	var spawnTimer = null;
 	var bounds = {x: 0, y: 0, config: {
 		width: map.size.width * SEGMENT,
 		height: map.size.height * SEGMENT
@@ -131,7 +132,7 @@ export default function init(map) {
 		for (i = 0; i < enemies.length; i ++) {
 			if (inObject(enemies[i], finish)) {
 				lives --;
-				enemies[i].die();
+				enemies[i].dieWithoutBounty();
 			}
 		}
 		clearDeadObjects();
@@ -178,18 +179,22 @@ export default function init(map) {
 		enemies = alive;
 	}
 
-	function clearUnit(target) {
+	function clearUnit(target, silent) {
+		var arr = towers.concat(shots);
 		var i;
-		for (i = 0; i < towers.length; i ++) {
-			if (towers[i].target === target) {
-				towers[i].setTarget(null);
+		for (i = 0; i < arr.length; i ++) {
+			if (arr[i].target === target) {
+				arr[i].setTarget(null);
 			}
 		}
-		gold += target.config.bounty;
+		if (silent) {
+			return;
+		}
+		gold += target.bounty;
 		unitsInWave --;
 		if (!unitsInWave) {
 			waveNumber ++;
-			setTimeout(runWave, 5000);
+			runWave();
 		}
 	}
 
@@ -245,12 +250,19 @@ export default function init(map) {
 				y: map.spawn.y * SEGMENT
 			});
 			spawned ++;
-			setTimeout(spawn, 3000);
+			spawnTimer = setTimeout(spawn, 3000);
 		}
-		spawn();
+		spawnTimer = setTimeout(spawn, 5000);
 	}
 	function run() {
 		runWave();
+	}
+	function destroy() {
+		clearTimout(spawnTimer);
+		enemies.forEach(item => clearUnit(item, true));
+		enemies = [];
+		towers = [];
+		shots = [];
 	}
 	function getStats() {
 		return {wave: waveNumber + 1, lives, score, gold, unitsInWave};
@@ -258,6 +270,6 @@ export default function init(map) {
 
 	return {
 		buildTower, addUnit, getUnits, setTargets, fire, collision,
-		buildAtributes, run, getStats
+		buildAtributes, run, getStats, destroy
 	};
 }

@@ -48,8 +48,16 @@ canvas.addEventListener('click', e => {
 });
 
 function gameLoop() {
+	var next = setTimeout.bind(null, gameLoop, 1000 / 60);
 	if (isPause) {
-		return setTimeout(gameLoop, 1000 / 60);
+		return next();
+	}
+	var stats = game.getStats();
+	if (stats.lives <= 0) {
+		game.destroy();
+		game = initGame(map);
+		game.run();
+		return next();
 	}
 	game.setTargets();
 	game.fire();
@@ -57,7 +65,7 @@ function gameLoop() {
 	game.getUnits().forEach(item => {
 		item.move();
 	});
-	setTimeout(gameLoop, 1000 / 60);
+	next();
 }
 
 function renderLoop() {

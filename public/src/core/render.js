@@ -78,10 +78,9 @@ function renderText(text, {layer, x, y}) {
 	layer.fillText(text, x, y);
 }
 export function renderStats(stats, {layer}) {
-	renderText(`wave:  ${stats.wave}`, {x: 10, y: 20, layer});
-	renderText(`lives: ${stats.lives}`, {x: 10, y: 40, layer});
-	renderText(`gold:  ${stats.gold}`, {x: 10, y: 60, layer});
-	renderText(`score: ${stats.score}`, {x: 10, y: 80, layer});
+	renderText(`Wave  ${stats.wave}`, {x: 10, y: 20, layer});
+	renderText(`Lives ${stats.lives}`, {x: 10, y: 40, layer});
+	renderText(`Gold  ${stats.gold}`, {x: 10, y: 60, layer});
 }
 
 export function renderPanel(elem) {
