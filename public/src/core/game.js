@@ -1,7 +1,7 @@
 import Unit from './Unit';
 import {SEGMENT} from './constants';
 import astar from './algorithms/astar';
-import {inRangeDiff, random, round, inRange, getAngle, inObject, inSplash} from './utils';
+import {isOverlap, inRangeDiff, random, round, inRange, getAngle, inObject, inSplash} from './utils';
 
 export default function init(map) {
 	var waveNumber = 0;
@@ -17,6 +17,11 @@ export default function init(map) {
 		width: map.size.width * SEGMENT,
 		height: map.size.height * SEGMENT
 	}};
+	var finish = {
+		x: map.finish.x * SEGMENT,
+		y: map.finish.y * SEGMENT,
+		config: {width: SEGMENT, height: SEGMENT}
+	};
 	var mapObjects = new Array(map.size.height).join().split(',').map(line => {
 		return new Array(map.size.width).join().split(',').map(Number);
 	});
@@ -124,7 +129,7 @@ export default function init(map) {
 		}
 		clearDeadObjects();
 		for (i = 0; i < enemies.length; i ++) {
-			if (!inObject(enemies[i], bounds)) {
+			if (inObject(enemies[i], finish)) {
 				lives --;
 				enemies[i].die();
 			}
@@ -206,12 +211,14 @@ export default function init(map) {
 		var grid = coordsToGrid(point);
 		var x = grid.x * SEGMENT;
 		var y = grid.y * SEGMENT;
+		var tower = {x, y, config};
+		var unit;
 		var i;
 		if (config.price > gold) {
 			return {x, y, alowed: false};
 		}
 		for (i = 0; i < arr.length; i ++) {
-			if (inObject(point, arr[i])) {
+			if (isOverlap(arr[i], tower)) {
 				return {x, y, alowed: false};
 			}
 		}

@@ -2,7 +2,7 @@ const sqrt = Math.sqrt;
 const sqr = x => x * x;
 
 export function inRange(t, e) {
-	return sqr(e.x - t.x) + sqr(e.y - t.y) < sqr(t.config.range);
+	return inRangeDiff(t, e) < 0;
 }
 export function inRangeDiff(t, e) {
 	return sqr(e.x - t.x) + sqr(e.y - t.y) - sqr(t.config.range);
@@ -25,6 +25,16 @@ export function inObject(a, b) {
 		a.x < b.x + b.config.width + aw2 &&
 		a.y >= b.y - ah2 &&
 		a.y < b.y + b.config.height + ah2;
+}
+
+export function isOverlap(a, b) {
+	return (
+		a.x >= b.x && a.x < b.x + b.config.width ||
+		a.x + a.config.width > b.x && a.x + a.config.width < b.x + b.config.width
+	) && (
+		a.y >= b.y && a.y < b.y + b.config.height ||
+		a.y + a.config.height > b.y && a.y + a.config.height < b.y + b.config.height
+	);
 }
 
 export function inSplash(shot, target) {
