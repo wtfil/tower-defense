@@ -27,7 +27,7 @@ var towerToBuild = null;
 game.run();
 renderPanel(document.querySelector('[data-panel]'));
 document.addEventListener('visibilitychange', e => isPause = document.hidden);
-document.addEventListener('contextmenu', e => {
+canvas.addEventListener('contextmenu', e => {
 	e.preventDefault();
 	towerToBuild = null
 });
