@@ -10,9 +10,25 @@ function Unit(config, {x, y, target}) {
 	this.health = config.health;
 	this.target = target || null;
 	this.path = null;
+	this.buffs = {};
 	this.angle = target ? getAngle(this, target) : 0;
+	this.applyBuffs();
 }
+Unit.prototype.applyBuffs = function () {
+	var name, buff;
+	this.movementSpeed = this.config.movementSpeed;
+	for (name in this.buffs) {
+		buff = this.buffs[name];
+		if (buff.duration + buff.startAt < Date.now()) {
+			delete this.buffs[name];
+			continue;
+		}
+		this.buffs[name].effect(this);
+	}
+
+};
 Unit.prototype.move = function () {
+	this.applyBuffs();
 	if (this.config.homing && this.target) {
 		this.angle = getAngle(this, this.target);
 	} else if (this.path) {
@@ -24,8 +40,8 @@ Unit.prototype.move = function () {
 			}
 		}
 	}
-	this.x += this.config.movementSpeed * Math.cos(this.angle);
-	this.y += this.config.movementSpeed * Math.sin(this.angle);
+	this.x += this.movementSpeed * Math.cos(this.angle);
+	this.y += this.movementSpeed * Math.sin(this.angle);
 };
 Unit.prototype.setPath = function (path) {
 	this.path = path;
@@ -33,8 +49,15 @@ Unit.prototype.setPath = function (path) {
 Unit.prototype.setTarget = function (target) {
 	this.target = target;
 };
-Unit.prototype.takeDamage = function (damage) {
-	this.health -= damage;
+Unit.prototype.takeDamage = function (config) {
+	this.health -= config.damage;
+	if (config.buff) {
+		this.buffs[config.buff.name] = {
+			...config.buff,
+			startAt: Date.now()
+		};
+		this.applyBuffs();
+	}
 	if (this.health <= 0) {
 		this.die();
 	}

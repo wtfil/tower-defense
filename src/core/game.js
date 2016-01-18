@@ -158,7 +158,7 @@ export default function init(map) {
 	}
 
 	function attackSingle(shot, target) {
-		target.takeDamage(shot.config.damage);
+		target.takeDamage(shot.config);
 	}
 
 	function clearDeadObjects() {
@@ -258,7 +258,7 @@ export default function init(map) {
 		runWave();
 	}
 	function destroy() {
-		clearTimout(spawnTimer);
+		clearTimeout(spawnTimer);
 		enemies.forEach(item => clearUnit(item, true));
 		enemies = [];
 		towers = [];
