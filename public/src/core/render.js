@@ -7,16 +7,9 @@ var cache = [];
 
 export function render(obj, {x, y, layer, time = 0, health}) {
 	function done() {
-		var hp = health / obj.health;
 		layer.imageSmoothingEnabled = false;
 		layer.drawImage(img, x, y, obj.width, obj.height);
-		layer.globalAlpha = 1;
-		if ('health' in obj) {
-			layer.fillStyle = '#00FF00';
-			layer.fillRect(x, y, obj.width, 2);
-			layer.fillStyle = '#FF0000';
-			layer.fillRect(x + hp * obj.width, y, (1 - hp) * obj.width, 2);
-		}
+		layer.globalAlpha = 1; // TODO wtf?
 	}
 	var interval = obj.fastAnimation ? FAST_ANIMATION_INTERVAL: ANIMATION_INTERVAL;
 	var frame = ~~((Date.now() - time) / interval) % obj.textures.length;
@@ -34,6 +27,36 @@ export function render(obj, {x, y, layer, time = 0, health}) {
 		done();
 	} else {
 		img.loads.push(done);
+	}
+}
+
+export function renderUnit(unit, {layer}) {
+	var config = unit.config;
+	var hp = unit.health / config.health;
+	var c = 0;
+	var r = 4;
+	var name, buff, duration;
+	render(config, {
+		layer,
+		x: unit.x,
+		y: unit.y,
+		time: unit.createdAt
+	});
+	if ('health' in config) {
+		layer.fillStyle = '#00FF00';
+		layer.fillRect(unit.x, unit.y, config.width, 2);
+		layer.fillStyle = '#FF0000';
+		layer.fillRect(unit.x + hp * config.width, unit.y, (1 - hp) * config.width, 2);
+	}
+	for (name in unit.buffs) {
+		buff = unit.buffs[name];
+		duration = (Date.now() - buff.startAt) / buff.duration;
+		layer.beginPath();
+		layer.arc(unit.x + r * (c + 1), unit.y + 2 + r, r, (2 * duration - 0.5) * Math.PI, 1.5 * Math.PI);
+		layer.lineTo(unit.x + r * (c + 1), unit.y + 2 + r);
+		layer.fillStyle = buff.progressColor;
+		layer.fill();
+		c ++;
 	}
 }
 
@@ -57,16 +80,8 @@ export function renderCursor(obj, {x, y, layer, alowed}) {
 	render(obj, {layer, x, y});
 }
 
-export function renderUnits(units, {layer}) {
-	units.forEach(unit => {
-		render(unit.config, {
-			layer,
-			x: unit.x,
-			y: unit.y,
-			health: unit.health,
-			time: unit.createdAt
-		});
-	});
+export function renderUnits(units, opts) {
+	units.forEach(unit => renderUnit(unit, opts));
 }
 
 function renderText(text, {layer, x, y}) {
