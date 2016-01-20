@@ -1,5 +1,5 @@
 export default {
-	name: 'Unit',
+	name: 'Recruit',
 	type: 'unit',
 	textures: [
 		'images/unit_1_1.png',
@@ -8,7 +8,7 @@ export default {
 	width: 18,
 	height: 32,
 	movementSpeed: 0.6,
-	bounty: 3,
-	health: 100,
+	bounty: 5,
+	health: 200,
 	damage: 0
 };

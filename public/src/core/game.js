@@ -250,7 +250,7 @@ export default function init(map) {
 				y: map.spawn.y * SEGMENT
 			});
 			spawned ++;
-			spawnTimer = setTimeout(spawn, 3000);
+			spawnTimer = setTimeout(spawn, 2000);
 		}
 		spawnTimer = setTimeout(spawn, 5000);
 	}
@@ -265,7 +265,11 @@ export default function init(map) {
 		shots = [];
 	}
 	function getStats() {
-		return {wave: waveNumber + 1, lives, score, gold, unitsInWave};
+		return {
+			wave: waveNumber + 1,
+			totalWaves: map.waves.length,
+			lives, score, gold, unitsInWave
+		};
 	}
 
 	return {
