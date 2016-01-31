@@ -7,11 +7,11 @@ export default {
 	},
 	spawn: {
 		x: 0,
-		y: 5
+		y: 2
 	},
 	finish: {
 		x: 19,
-		y: 5
+		y: 7
 	},
 	waves: [
 		[1, 10],
