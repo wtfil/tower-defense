@@ -6,7 +6,7 @@ export default {
 	height: 32,
 	movementSpeed: 0,
 	attackSpeed: 1,
-	price: 15,
+	price: 20,
 	range: 250,
 	shot: {
 		textures: ['images/shot_1.png'],

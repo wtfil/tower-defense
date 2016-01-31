@@ -10,7 +10,7 @@ export default {
 	range: 100,
 	shot: {
 		textures: ['images/shot_3_1.png'],
-		damage: 1,
+		damage: 5,
 		homing: true,
 		splash: 50,
 		movementSpeed: 2,

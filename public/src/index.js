@@ -1,6 +1,14 @@
 import {getFirst} from './maps';
 import * as objects from './objects';
-import {renderPanel, renderStats, renderUnits, renderCursor, renderMap, preloadAll} from './core/render';
+import {
+	renderPanel,
+	renderStats,
+	renderUnits,
+	renderCursor,
+	renderUnitOptions,
+	renderMap,
+	preloadAll
+} from './core/render';
 import {round, random} from './core/utils';
 import initGame from './core/game';
 import initMouse from './core/mouse';
@@ -17,16 +25,21 @@ const ctx = canvas.getContext('2d');
 const mouse = initMouse(ctx);
 const towers = Object.keys(objects).map(key => objects[key]).filter(item => item.type === 'tower');
 ctx.imageSmoothingEnabled = false;
+ctx.translate(0.5, 0.5);
 canvas.width = 640;
 canvas.height = 320;
 
 var game = initGame(map);
 var isPause = false;
 var towerToBuild = null;
+var selectedUnit = null;
 
 game.run();
 renderPanel(document.querySelector('[data-panel]'));
 document.addEventListener('visibilitychange', e => isPause = document.hidden);
+document.querySelector('[data-fullscreen]').addEventListener('click', e => {
+	canvas.webkitRequestFullScreen();
+});
 canvas.addEventListener('contextmenu', e => {
 	e.preventDefault();
 	towerToBuild = null
@@ -37,13 +50,24 @@ towers.forEach(tower => {
 	});
 });
 canvas.addEventListener('click', e => {
-	var point;
+	var point = mouse.get();
+	var action;
 	if (towerToBuild) {
-		point = game.buildAtributes(towerToBuild, mouse.get());
+		point = game.buildAtributes(towerToBuild, point);
 		if (!point.alowed) {
 			return;
 		}
 		game.buildTower(towerToBuild, point);
+	} else {
+		action = game.findUnderCursor(point);
+		if (!action) {
+			selectedUnit = null;
+			return;
+		}
+		if (action.type === 'tower') {
+			selectedUnit = action.tower;
+			return;
+		}
 	}
 });
 
@@ -74,6 +98,7 @@ function renderLoop() {
 	renderMap(map.map, renderOpts);
 	renderUnits(game.getUnits(), renderOpts);
 	renderStats(game.getStats(), renderOpts);
+	renderUnitOptions(selectedUnit, renderOpts);
 	if (towerToBuild) {
 		renderCursor(towerToBuild, {
 			...renderOpts,
