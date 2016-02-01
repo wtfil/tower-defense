@@ -1,20 +1,6 @@
-import {assets} from './objects';
 import TowerDefense from './core/TowerDefense';
 
-/*
-var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload, update, create });
-function preload () {
-	assets.forEach(item => {
-		this.game.load.image(item[0], item[1]);
-	});
-}
-function create () {
-	this.game.add.sprite(0, 0, 'grass.0');
-}
-function update () {
-}
-*/
-var game = new Phaser.Game(800, 320, Phaser.AUTO);
+var game = new Phaser.Game(704, 320, Phaser.AUTO);
 game.state.add('Game', TowerDefense, true);
 
 
