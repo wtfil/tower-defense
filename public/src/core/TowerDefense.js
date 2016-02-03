@@ -8,6 +8,33 @@ const FONT_SCALES = {
 	l: 1
 };
 
+class Dynamic extends Phaser.Sprite {
+	constructor(game, config, x, y) {
+		super(game, x, y, config.name);
+		this.config = config;
+
+		this.game.physics.startSystem(Phaser.Physics.ARCADE);
+		this.game.add.existing(this);
+		this.animations.add('move');
+		this.animations.play('move', 4, true);
+		this.checkWorldBounds = true;
+		this.outOfBoundsKill = true;
+	}
+}
+
+class Unit extends Dynamic {
+	update() {
+		this.body.velocity.x = this.config.movementSpeed * 100;
+	}
+}
+class Tower extends Dynamic {
+	constructor(...args) {
+		super(...args);
+		this.width = SEGMENT;
+		this.height = SEGMENT;
+	}
+}
+
 export default class TowerDefense {
 	constructor() {
 		this.map = getFirst();
@@ -61,28 +88,24 @@ export default class TowerDefense {
 			button.height = SEGMENT;
 		});
 
-		this.units = this.add.physicsGroup();
 		this.towers = this.add.group();
+		this.units = this.add.physicsGroup();
 		this.ammo = this.add.group();
 
 		this.time.events.repeat(2000, 10, ::this.spawnUnit);
 	}
 
 	spawnUnit() {
-		var config = units[0];
-		var unit = this.units.create(this.map.spawn.x * SEGMENT, this.map.spawn.y * SEGMENT, config.name);
-		unit.body.velocity.x = config.movementSpeed * 100;
-		unit.animations.add('move');
-		unit.animations.play('move', 4, true);
+		const config = units[0];
+		const x = this.map.spawn.x * SEGMENT;
+		const y = this.map.spawn.y * SEGMENT;
+		this.units.add(new Unit(this.game, config, x, y));
 	}
 
-	spawnTower(config, x, y) {
-		var tower = this.towers.create(x, y, config.name);
-		tower.width = SEGMENT;
-		tower.height = SEGMENT;
+	spawnTower(x, y) {
+		this.towers.add(new Tower(this.game, this.towerToBuild, x, y));
 		this.towerToBuild = null;
 		this.cursor.visible = false;
-		return tower;
 	}
 
 	update() {
@@ -97,7 +120,7 @@ export default class TowerDefense {
 		this.cursor.position.set(round(worldX, SEGMENT), round(worldY, SEGMENT));
 
 		if (this.input.activePointer.isDown && this.towerToBuild) {
-			this.spawnTower(this.towerToBuild, x, y);
+			this.spawnTower(x, y);
 		}
 	}
 
