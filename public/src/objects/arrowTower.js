@@ -5,10 +5,11 @@ export default {
 	width: 32,
 	height: 32,
 	movementSpeed: 0,
-	attackSpeed: 1,
+	attackSpeed: 10,
 	price: 20,
 	range: 250,
 	shot: {
+		name: 'Arrow Tower Ammo',
 		textures: ['images/shot_1.png'],
 		damage: 10,
 		homing: true,

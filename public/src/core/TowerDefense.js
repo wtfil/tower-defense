@@ -12,6 +12,8 @@ class Dynamic extends Phaser.Sprite {
 	constructor(game, config, x, y) {
 		super(game, x, y, config.name);
 		this.config = config;
+		this.width = config.width;
+		this.height = config.height;
 
 		this.game.physics.startSystem(Phaser.Physics.ARCADE);
 		this.game.add.existing(this);
@@ -22,16 +24,44 @@ class Dynamic extends Phaser.Sprite {
 	}
 }
 
+
 class Unit extends Dynamic {
+	constructor(...args) {
+		super(...args);
+		this.health = this.config.health;
+	}
+	update() {
+		this.body.velocity.x = this.config.movementSpeed * 100;
+	}
+	takeDamage(bullet) {
+		this.health -= bullet.config.damage;
+		if (this.health < 0) {
+			this.kill();
+		}
+	}
+}
+
+class Bullet extends Dynamic {
 	update() {
 		this.body.velocity.x = this.config.movementSpeed * 100;
 	}
 }
+
 class Tower extends Dynamic {
 	constructor(...args) {
 		super(...args);
-		this.width = SEGMENT;
-		this.height = SEGMENT;
+		this.fireInterval = 1000 / this.config.attackSpeed;
+		this.lastShotAt = 0;
+	}
+
+	fire(group) {
+		var now = Date.now();
+		if (this.lastShotAt + this.fireInterval > now) {
+			return null;
+		}
+		this.lastShotAt = now;
+		const bullet = new Bullet(this.game, this.config.shot, this.x, this.y);
+		group.add(bullet);
 	}
 }
 
@@ -48,7 +78,9 @@ export default class TowerDefense {
 		this.load.image('grass', 'images/grass_3.png');
 		this.load.image('font', 'images/PressStart2P.png');
 		this.load.spritesheet('spawn', 'images/spawn.png', SEGMENT, SEGMENT);
-		units.concat(towers).forEach(item => {
+		units.concat(towers).reduce((arr, item) => {
+			return arr.concat(item).concat(item.shot);
+		}, []).filter(Boolean).forEach(item => {
 			if (item.sprite) {
 				this.load.spritesheet(item.name, item.sprite, SEGMENT, SEGMENT);
 			} else {
@@ -80,6 +112,10 @@ export default class TowerDefense {
 		this.addSprite(spawn.x * SEGMENT, spawn.y * SEGMENT, 'spawn');
 		this.addSprite(finish.x * SEGMENT, finish.y * SEGMENT, 'spawn');
 
+		this.towers = this.add.group();
+		this.units = this.add.physicsGroup();
+		this.bullets = this.add.physicsGroup();
+
 		this.cursor = this.add.sprite();
 		this.cursor.visible = false;
 		towers.forEach((tower, index) => {
@@ -87,10 +123,6 @@ export default class TowerDefense {
 			button.width = SEGMENT;
 			button.height = SEGMENT;
 		});
-
-		this.towers = this.add.group();
-		this.units = this.add.physicsGroup();
-		this.ammo = this.add.group();
 
 		this.time.events.repeat(2000, 10, ::this.spawnUnit);
 	}
@@ -116,8 +148,9 @@ export default class TowerDefense {
 			Lives ${this.stats.lives}
 			Wave  ${this.stats.wave + 1}
 		`.trim();
-		this.physics.arcade.overlap(this.ammo, this.units, this.attackUnit.bind(this));
-		this.cursor.position.set(round(worldX, SEGMENT), round(worldY, SEGMENT));
+		this.towers.callAll('fire', null, this.bullets);
+		this.physics.arcade.overlap(this.bullets, this.units, this.attackUnit.bind(this));
+		this.cursor.position.set(x, y);
 
 		if (this.input.activePointer.isDown && this.towerToBuild) {
 			this.spawnTower(x, y);
@@ -132,7 +165,8 @@ export default class TowerDefense {
 		this.cursor.visible = true;
 	}
 
-	attackUnit() {
-		console.log(arguments);
+	attackUnit(bullet, unit) {
+		unit.takeDamage(bullet);
+		bullet.kill();
 	}
 }
