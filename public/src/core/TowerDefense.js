@@ -1,69 +1,15 @@
 import {getFirst} from '../maps';
 import {units, towers} from '../objects';
 import {round} from './utils';
+import Unit from './Unit';
+import Tower from './Tower';
+
 const SEGMENT = 32;
 const FONT_SCALES = {
 	s: 1 / 4,
 	m: 1 / 2,
 	l: 1
 };
-
-class Dynamic extends Phaser.Sprite {
-	constructor(game, config, x, y) {
-		super(game, x, y, config.name);
-		this.config = config;
-		this.width = config.width;
-		this.height = config.height;
-
-		this.game.physics.startSystem(Phaser.Physics.ARCADE);
-		this.game.add.existing(this);
-		this.animations.add('move');
-		this.animations.play('move', 4, true);
-		this.checkWorldBounds = true;
-		this.outOfBoundsKill = true;
-	}
-}
-
-
-class Unit extends Dynamic {
-	constructor(...args) {
-		super(...args);
-		this.health = this.config.health;
-	}
-	update() {
-		this.body.velocity.x = this.config.movementSpeed * 100;
-	}
-	takeDamage(bullet) {
-		this.health -= bullet.config.damage;
-		if (this.health < 0) {
-			this.kill();
-		}
-	}
-}
-
-class Bullet extends Dynamic {
-	update() {
-		this.body.velocity.x = this.config.movementSpeed * 100;
-	}
-}
-
-class Tower extends Dynamic {
-	constructor(...args) {
-		super(...args);
-		this.fireInterval = 1000 / this.config.attackSpeed;
-		this.lastShotAt = 0;
-	}
-
-	fire(group) {
-		var now = Date.now();
-		if (this.lastShotAt + this.fireInterval > now) {
-			return null;
-		}
-		this.lastShotAt = now;
-		const bullet = new Bullet(this.game, this.config.shot, this.x, this.y);
-		group.add(bullet);
-	}
-}
 
 export default class TowerDefense {
 	constructor() {
