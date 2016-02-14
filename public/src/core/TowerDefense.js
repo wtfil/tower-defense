@@ -27,6 +27,9 @@ export default class TowerDefense {
 		units.concat(towers).reduce((arr, item) => {
 			return arr.concat(item).concat(item.shot);
 		}, []).filter(Boolean).forEach(item => {
+			if (!item.name) {
+				console.warn('Name is missing', item);
+			}
 			if (item.sprite) {
 				this.load.spritesheet(item.name, item.sprite, SEGMENT, SEGMENT);
 			} else {
@@ -94,6 +97,7 @@ export default class TowerDefense {
 			Lives ${this.stats.lives}
 			Wave  ${this.stats.wave + 1}
 		`.trim();
+		this.towers.callAll('setTarget', null, this.units);
 		this.towers.callAll('fire', null, this.bullets);
 		this.physics.arcade.overlap(this.bullets, this.units, this.attackUnit.bind(this));
 		this.cursor.position.set(x, y);
@@ -114,5 +118,10 @@ export default class TowerDefense {
 	attackUnit(bullet, unit) {
 		unit.takeDamage(bullet);
 		bullet.kill();
+		if (!unit.exists) {
+			this.towers.callAll('clearTarget', null, unit);
+			this.bullets.callAll('clearTarget', null, unit);
+		}
 	}
+
 }

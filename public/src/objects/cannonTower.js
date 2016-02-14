@@ -10,6 +10,7 @@ export default {
 	range: 250,
 	shot: {
 		textures: ['images/shot_2.png'],
+		name: 'Cannon Tower Shot',
 		damage: 30,
 		homing: false,
 		splash: 30,
