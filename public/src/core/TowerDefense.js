@@ -1,6 +1,7 @@
 import {getFirst} from '../maps';
 import {units, towers} from '../objects';
-import {round} from './utils';
+import {round, inSplash} from './utils';
+import astar from './algorithms/astar';
 import Unit from './Unit';
 import Tower from './Tower';
 
@@ -65,6 +66,9 @@ export default class TowerDefense {
 		this.units = this.add.physicsGroup();
 		this.bullets = this.add.physicsGroup();
 
+		this.mapObjects = new Array(this.map.size.height)
+			.fill(new Array(this.map.size.width).fill(0));
+
 		this.cursor = this.add.sprite();
 		this.cursor.visible = false;
 		towers.forEach((tower, index) => {
@@ -80,7 +84,19 @@ export default class TowerDefense {
 		const config = units[0];
 		const x = this.map.spawn.x * SEGMENT;
 		const y = this.map.spawn.y * SEGMENT;
-		this.units.add(new Unit(this.game, config, x, y));
+		const unit = new Unit(this.game, config, x, y);
+		const path = astar(
+			this.map.spawn,
+			this.map.finish,
+			this.mapObjects
+		).slice(1).map(point => ({
+			// scale(point, SEGMENT)
+			x: point.x * SEGMENT,
+			y: point.y * SEGMENT
+		}));
+
+		unit.setPath(path);
+		this.units.add(unit);
 	}
 
 	spawnTower(x, y) {
@@ -99,7 +115,7 @@ export default class TowerDefense {
 		`.trim();
 		this.towers.callAll('setTarget', null, this.units);
 		this.towers.callAll('fire', null, this.bullets);
-		this.physics.arcade.overlap(this.bullets, this.units, this.attackUnit.bind(this));
+		this.physics.arcade.overlap(this.bullets, this.units, ::this.attackUnits);
 		this.cursor.position.set(x, y);
 
 		if (this.input.activePointer.isDown && this.towerToBuild) {
@@ -122,6 +138,17 @@ export default class TowerDefense {
 			this.towers.callAll('clearTarget', null, unit);
 			this.bullets.callAll('clearTarget', null, unit);
 		}
+	}
+
+	attackUnits(bullet, unit) {
+		if (!bullet.config.splash) {
+			return this.attackUnit(bullet, unit);
+		}
+		this.units.forEach(unit => {
+			if (inSplash(bullet, unit)) {
+				this.attackUnit(bullet, unit);
+			}
+		});
 	}
 
 }
