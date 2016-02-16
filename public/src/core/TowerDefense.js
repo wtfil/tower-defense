@@ -1,6 +1,6 @@
 import {getFirst} from '../maps';
 import {units, towers} from '../objects';
-import {round, inSplash} from './utils';
+import {scale, round, inSplash} from './utils';
 import astar from './algorithms/astar';
 import Unit from './Unit';
 import Tower from './Tower';
@@ -47,8 +47,8 @@ export default class TowerDefense {
 	addLabel(x, y, size) {
 		var label = this.add.retroFont('font', 32, 32, Phaser.RetroFont.TEXT_SET1);
 		var image = this.add.image(x, y, label);
-		var scale = FONT_SCALES[size] || 1;
-		image.scale.setTo(scale, scale);
+		var fontScale = FONT_SCALES[size] || 1;
+		image.scale.setTo(fontScale, fontScale);
 		label.multiLine = true;
 		return label;
 	}
@@ -66,10 +66,17 @@ export default class TowerDefense {
 		this.units = this.add.physicsGroup();
 		this.bullets = this.add.physicsGroup();
 
-		this.mapObjects = new Array(this.map.size.height)
-			.fill(new Array(this.map.size.width).fill(0));
+		this.mapObjects = new Array(this.map.size.height).fill()
+			.map(_ => new Array(this.map.size.width).fill(0));
+
 
 		this.cursor = this.add.sprite();
+		/*
+		this.cursorBg = new Phaser.Graphics(this.game);
+		this.cursorBg.fillStyle = '#ffffff';
+		this.cursorBg.drawRect(0, 0, SEGMENT, SEGMENT);
+		this.cursor.addChild(this.cursorBg);
+		*/
 		this.cursor.visible = false;
 		towers.forEach((tower, index) => {
 			var button = this.add.button(640, SEGMENT * index, tower.name, () => this.selectTowerToBuild(tower));
@@ -82,27 +89,27 @@ export default class TowerDefense {
 
 	spawnUnit() {
 		const config = units[0];
-		const x = this.map.spawn.x * SEGMENT;
-		const y = this.map.spawn.y * SEGMENT;
+		const {x, y} = scale(this.map.spawn, SEGMENT);
 		const unit = new Unit(this.game, config, x, y);
+		this.units.add(unit);
+		this.updatePath(unit);
+	}
+
+	updatePath(unit) {
 		const path = astar(
-			this.map.spawn,
+			scale(unit, 1 / SEGMENT),
 			this.map.finish,
 			this.mapObjects
-		).slice(1).map(point => ({
-			// scale(point, SEGMENT)
-			x: point.x * SEGMENT,
-			y: point.y * SEGMENT
-		}));
-
+		).slice(1).map(point => scale(point, SEGMENT));
 		unit.setPath(path);
-		this.units.add(unit);
 	}
 
 	spawnTower(x, y) {
 		this.towers.add(new Tower(this.game, this.towerToBuild, x, y));
 		this.towerToBuild = null;
 		this.cursor.visible = false;
+		this.mapObjects[y / SEGMENT][x / SEGMENT] = 1;
+		this.units.forEachExists(::this.updatePath);
 	}
 
 	update() {

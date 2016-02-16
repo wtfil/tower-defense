@@ -12,6 +12,13 @@ export function distance2(a, b) {
 	return sqr(a.x - b.x) + sqr(a.y - b.y);
 }
 
+export function scale(point, n) {
+	return {
+		x: Math.floor(point.x * n),
+		y: Math.floor(point.y * n)
+	};
+}
+
 export function getAngle(a, b) {
 	var dx = b.x - a.x;
 	var dy = b.y - a.y;
