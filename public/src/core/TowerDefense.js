@@ -1,6 +1,6 @@
 import {getFirst} from '../maps';
 import {units, towers} from '../objects';
-import {scale, round, inSplash} from './utils';
+import {scale, round, inSplash, isOverlap} from './utils';
 import astar from './algorithms/astar';
 import Unit from './Unit';
 import Tower from './Tower';
@@ -66,18 +66,15 @@ export default class TowerDefense {
 		this.units = this.add.physicsGroup();
 		this.bullets = this.add.physicsGroup();
 
+		this.towerAllowedPlacesCache = {};
 		this.mapObjects = new Array(this.map.size.height).fill()
 			.map(_ => new Array(this.map.size.width).fill(0));
 
 
 		this.cursor = this.add.sprite();
-		/*
-		this.cursorBg = new Phaser.Graphics(this.game);
-		this.cursorBg.fillStyle = '#ffffff';
-		this.cursorBg.drawRect(0, 0, SEGMENT, SEGMENT);
-		this.cursor.addChild(this.cursorBg);
-		*/
+		this.cursor.tint = 0xff0000;
 		this.cursor.visible = false;
+
 		towers.forEach((tower, index) => {
 			var button = this.add.button(640, SEGMENT * index, tower.name, () => this.selectTowerToBuild(tower));
 			button.width = SEGMENT;
@@ -105,11 +102,40 @@ export default class TowerDefense {
 	}
 
 	spawnTower(x, y) {
+		if (!this.isAllowToBuild(x, y)) {
+			return;
+		}
 		this.towers.add(new Tower(this.game, this.towerToBuild, x, y));
 		this.towerToBuild = null;
 		this.cursor.visible = false;
 		this.mapObjects[y / SEGMENT][x / SEGMENT] = 1;
+		this.towerAllowedPlacesCache = {};
 		this.units.forEachExists(::this.updatePath);
+	}
+
+	isAllowToBuild(x, y) {
+		const objects = this.units.children.concat(this.towers.children);
+		const tower = {config: this.towerToBuild, x, y};
+		var i;
+
+		for (i = 0; i < objects.length; i ++) {
+			if (objects[i].exists && isOverlap(objects[i], tower)) {
+				return false;
+			}
+		}
+
+		x /= SEGMENT;
+		y /= SEGMENT;
+
+		const key = x + ',' + y;
+		if (key in this.towerAllowedPlacesCache) {
+			return this.towerAllowedPlacesCache[key];
+		}
+		const mapObjectsCopy = this.mapObjects.slice();
+		mapObjectsCopy[y] = this.mapObjects[y].slice();
+		mapObjectsCopy[y][x] = 1;
+		const path = astar(this.map.spawn, this.map.finish, mapObjectsCopy);
+		return (this.towerAllowedPlacesCache[key] = Boolean(path));
 	}
 
 	update() {
@@ -124,6 +150,10 @@ export default class TowerDefense {
 		this.towers.callAll('fire', null, this.bullets);
 		this.physics.arcade.overlap(this.bullets, this.units, ::this.attackUnits);
 		this.cursor.position.set(x, y);
+		if (this.towerToBuild) {
+			this.cursor.tint = this.isAllowToBuild(x, y) ?
+				0x00ff00 : 0xff0000;
+		}
 
 		if (this.input.activePointer.isDown && this.towerToBuild) {
 			this.spawnTower(x, y);
