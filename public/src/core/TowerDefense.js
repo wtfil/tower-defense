@@ -15,11 +15,6 @@ const FONT_SCALES = {
 export default class TowerDefense {
 	constructor() {
 		this.map = getFirst();
-		this.stats = {
-			lives: this.map.lives,
-			gold: this.map.gold,
-			wave: 0
-		};
 	}
 	preload() {
 		this.load.image('grass', 'images/grass_3.png');
@@ -55,12 +50,18 @@ export default class TowerDefense {
 
 	create() {
 		const {size: {width, height}, spawn, finish} = this.map;
+		this.stats = {
+			lives: this.map.lives,
+			gold: this.map.gold,
+			wave: 0
+		};
 		this.physics.startSystem(Phaser.Physics.ARCADE);
 		this.stage.backgroundColor = 0xffffff;
 		this.add.tileSprite(0, 0, width * SEGMENT, height * SEGMENT, 'grass');
 		this.statsLabel = this.addLabel(5, 5, 'm');
-		this.addSprite(spawn.x * SEGMENT, spawn.y * SEGMENT, 'spawn');
-		this.addSprite(finish.x * SEGMENT, finish.y * SEGMENT, 'spawn');
+		this.start = this.addSprite(spawn.x * SEGMENT, spawn.y * SEGMENT, 'spawn');
+		this.finish = this.addSprite(finish.x * SEGMENT, finish.y * SEGMENT, 'spawn');
+		this.game.physics.arcade.enable(this.finish);
 
 		this.towers = this.add.group();
 		this.units = this.add.physicsGroup();
@@ -82,6 +83,7 @@ export default class TowerDefense {
 		});
 
 		this.time.events.repeat(2000, 10, ::this.spawnUnit);
+		this.esc = this.game.input.keyboard.addKey(Phaser.Keyboard.ESC);
 	}
 
 	spawnUnit() {
@@ -106,14 +108,16 @@ export default class TowerDefense {
 			return;
 		}
 		this.towers.add(new Tower(this.game, this.towerToBuild, x, y));
-		this.towerToBuild = null;
-		this.cursor.visible = false;
+		this.stats.gold -= this.towerToBuild.price;
 		this.mapObjects[y / SEGMENT][x / SEGMENT] = 1;
 		this.towerAllowedPlacesCache = {};
 		this.units.forEachExists(::this.updatePath);
 	}
 
 	isAllowToBuild(x, y) {
+		if (this.towerToBuild.price > this.stats.gold) {
+			return false;
+		}
 		const objects = this.units.children.concat(this.towers.children);
 		const tower = {config: this.towerToBuild, x, y};
 		var i;
@@ -143,18 +147,25 @@ export default class TowerDefense {
 		const x = round(worldX, SEGMENT);
 		const y = round(worldY, SEGMENT);
 		this.statsLabel.text = `
+			Gold  ${this.stats.gold}
 			Lives ${this.stats.lives}
 			Wave  ${this.stats.wave + 1}
 		`.trim();
+
 		this.towers.callAll('setTarget', null, this.units);
 		this.towers.callAll('fire', null, this.bullets);
 		this.physics.arcade.overlap(this.bullets, this.units, ::this.attackUnits);
+		this.physics.arcade.overlap(this.finish, this.units, ::this.unitFinish);
+
 		this.cursor.position.set(x, y);
+		if (this.esc.isDown) {
+			this.cursor.visible = false;
+			this.towerToBuild = null;
+		}
 		if (this.towerToBuild) {
 			this.cursor.tint = this.isAllowToBuild(x, y) ?
 				0x00ff00 : 0xff0000;
 		}
-
 		if (this.input.activePointer.isDown && this.towerToBuild) {
 			this.spawnTower(x, y);
 		}
@@ -172,8 +183,19 @@ export default class TowerDefense {
 		unit.takeDamage(bullet);
 		bullet.kill();
 		if (!unit.exists) {
+			this.stats.gold += unit.config.bounty;
 			this.towers.callAll('clearTarget', null, unit);
 			this.bullets.callAll('clearTarget', null, unit);
+		}
+	}
+
+	unitFinish(_, unit) {
+		unit.kill();
+		this.towers.callAll('clearTarget', null, unit);
+		this.bullets.callAll('clearTarget', null, unit);
+		this.stats.lives --;
+		if (this.stats.lives < 0) {
+			this.game.state.start('Game');
 		}
 	}
 
