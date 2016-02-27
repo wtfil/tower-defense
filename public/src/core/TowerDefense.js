@@ -53,6 +53,7 @@ export default class TowerDefense {
 		this.stats = {
 			lives: this.map.lives,
 			gold: this.map.gold,
+			unitsToKill: 0,
 			wave: 0
 		};
 		this.physics.startSystem(Phaser.Physics.ARCADE);
@@ -82,12 +83,17 @@ export default class TowerDefense {
 			button.height = SEGMENT;
 		});
 
-		this.time.events.repeat(2000, 10, ::this.spawnUnit);
 		this.esc = this.game.input.keyboard.addKey(Phaser.Keyboard.ESC);
+		this.runWave();
+	}
+
+	runWave() {
+		this.stats.unitsToKill = this.map.waves[this.stats.wave].count;
+		this.time.events.repeat(2000, this.stats.unitsToKill, ::this.spawnUnit);
 	}
 
 	spawnUnit() {
-		const config = units[0];
+		const config = this.map.waves[this.stats.wave].unit;
 		const {x, y} = scale(this.map.spawn, SEGMENT);
 		const unit = new Unit(this.game, config, x, y);
 		this.units.add(unit);
@@ -149,7 +155,7 @@ export default class TowerDefense {
 		this.statsLabel.text = `
 			Gold  ${this.stats.gold}
 			Lives ${this.stats.lives}
-			Wave  ${this.stats.wave + 1}
+			Wave  ${this.stats.wave + 1} / ${this.map.waves.length}
 		`.trim();
 
 		this.towers.callAll('setTarget', null, this.units);
@@ -184,18 +190,29 @@ export default class TowerDefense {
 		bullet.kill();
 		if (!unit.exists) {
 			this.stats.gold += unit.config.bounty;
-			this.towers.callAll('clearTarget', null, unit);
-			this.bullets.callAll('clearTarget', null, unit);
+			this.removeUnit(unit);
 		}
 	}
 
 	unitFinish(_, unit) {
 		unit.kill();
-		this.towers.callAll('clearTarget', null, unit);
-		this.bullets.callAll('clearTarget', null, unit);
+		this.removeUnit(unit);
 		this.stats.lives --;
 		if (this.stats.lives < 0) {
 			this.game.state.start('Game');
+		}
+	}
+
+	removeUnit(unit) {
+		this.towers.callAll('clearTarget', null, unit);
+		this.bullets.callAll('clearTarget', null, unit);
+		this.stats.unitsToKill --;
+		if (this.stats.unitsToKill === 0) {
+			this.stats.wave ++;
+			if (this.stats.wave >= this.map.waves.length) {
+				return this.game.state.start('Game');
+			}
+			this.game.time.events.add(5000, ::this.runWave).autoDestroy = true;
 		}
 	}
 

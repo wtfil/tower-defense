@@ -34,7 +34,7 @@ export default class Unit extends Dynamic {
 	}
 	takeDamage(bullet) {
 		this.health -= bullet.config.damage;
-		if (this.health < 0) {
+		if (this.health <= 0) {
 			this.kill();
 		}
 	}

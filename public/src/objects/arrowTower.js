@@ -11,7 +11,7 @@ export default {
 	shot: {
 		name: 'Arrow Tower Ammo',
 		textures: ['images/shot_1.png'],
-		damage: 1,
+		damage: 3,
 		homing: true,
 		movementSpeed: 3,
 		width: 10,
