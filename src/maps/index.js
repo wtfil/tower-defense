@@ -1,5 +1,5 @@
 import first from './first';
-import {spawn, unit, sand, grass, rock} from '../objects';
+import {spawn, recruit, peasant, sand, grass, rock} from '../objects';
 
 const landscapes = {
 	0: sand,
@@ -7,7 +7,8 @@ const landscapes = {
 	2: rock
 };
 const units = {
-	1: unit
+	1: peasant,
+	2: recruit
 };
 
 function createMap(config) {

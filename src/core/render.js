@@ -84,18 +84,18 @@ export function renderUnits(units, opts) {
 	units.forEach(unit => renderUnit(unit, opts));
 }
 
-function renderText(text, {layer, x, y}) {
+function renderText(text, {layer, x, y, size = 14}) {
 	layer.strokeStyle = 'black';
-	layer.font = '16px monaco';
+	layer.fillStyle = '#2A92B5';
+	layer.font = `${size}pt Tahoma`;
 	layer.lineWidth = 4;
 	layer.strokeText(text, x, y);
-	layer.fillStyle = 'white';
 	layer.fillText(text, x, y);
 }
 export function renderStats(stats, {layer}) {
-	renderText(`Wave  ${stats.wave}`, {x: 10, y: 20, layer});
-	renderText(`Lives ${stats.lives}`, {x: 10, y: 40, layer});
-	renderText(`Gold  ${stats.gold}`, {x: 10, y: 60, layer});
+	renderText(`Wave   ${stats.wave} / ${stats.totalWaves}`, {x: 10, y: 20, layer});
+	renderText(`Lives  ${stats.lives}`, {x: 10, y: 40, layer});
+	renderText(`Gold   ${stats.gold}`, {x: 10, y: 60, layer});
 }
 
 export function renderPanel(elem) {
@@ -111,6 +111,30 @@ export function renderPanel(elem) {
 			node.height = item.height;
 			elem.appendChild(node);
 		});
+}
+
+export function renderUnitOptions(unit, {layer}) {
+	if (!unit) {
+		return;
+	}
+	const {config} = unit;
+	const x = layer.canvas.offsetWidth;
+	const y = layer.canvas.offsetHeight;
+	const descirption = [
+		config.shot.homing && 'Homing',
+		config.shot.splash && 'Splash',
+		config.shot.buff && config.shot.buff.name
+	].filter(Boolean).join(', ');
+
+	function text(text, y) {
+		renderText(text, {layer, x: x - 190, y, size: 12});
+	}
+	layer.fillStyle = 'rgba(255, 255, 255, 0.5)';
+	layer.fillRect(x - 200, y - 100, x, y);
+	text(config.name, y - 80);
+	text(`Dmg: ${config.shot.damage}`, y - 60);
+	text(descirption, y - 40);
+	text('Sell price (70%): ' + Math.ceil(config.price * 0.7), y - 20);
 }
 
 export function preload(items, cb) {

@@ -1,11 +1,8 @@
 export default {
-	name: 'Unit',
+	name: 'Peasant',
 	type: 'unit',
-	textures: [
-		'images/unit_1_1.png',
-		'images/unit_1_2.png'
-	],
-	width: 18,
+	sprite: 'images/unit_1.png',
+	width: 32,
 	height: 32,
 	movementSpeed: 0.6,
 	bounty: 3,

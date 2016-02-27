@@ -23,10 +23,11 @@ export default function init(map) {
 		y: map.finish.y * SEGMENT,
 		config: {width: SEGMENT, height: SEGMENT}
 	};
-	var mapObjects = new Array(map.size.height).join().split(',').map(line => {
-		return new Array(map.size.width).join().split(',').map(Number);
+	var mapObjects = new Array(map.size.height).fill().map(line => {
+		return new Array(map.size.width).fill(0);
 	});
 	var cachedAstarGridResults = {};
+	var buttons = [];
 
 	function coordsToGrid(point) {
 		return {
@@ -234,6 +235,19 @@ export default function init(map) {
 		return {x, y, alowed: cachedAstarGrid(grid)};
 	}
 
+	function findUnderCursor(point) {
+		var i;
+		for (i = 0; i < towers.length; i ++) {
+			if (inObject(point, towers[i])) {
+				return {
+					type: 'tower',
+					tower: towers[i]
+				};
+			}
+		}
+		return null;
+	}
+
 	function runWave() {
 		if (waveNumber >= map.waves.length) {
 			return console.log('END GAME');
@@ -250,7 +264,7 @@ export default function init(map) {
 				y: map.spawn.y * SEGMENT
 			});
 			spawned ++;
-			spawnTimer = setTimeout(spawn, 3000);
+			spawnTimer = setTimeout(spawn, 2000);
 		}
 		spawnTimer = setTimeout(spawn, 5000);
 	}
@@ -263,13 +277,18 @@ export default function init(map) {
 		enemies = [];
 		towers = [];
 		shots = [];
+		buttons = [];
 	}
 	function getStats() {
-		return {wave: waveNumber + 1, lives, score, gold, unitsInWave};
+		return {
+			wave: waveNumber + 1,
+			totalWaves: map.waves.length,
+			lives, score, gold, unitsInWave
+		};
 	}
 
 	return {
 		buildTower, addUnit, getUnits, setTargets, fire, collision,
-		buildAtributes, run, getStats, destroy
+		buildAtributes, run, getStats, destroy, findUnderCursor
 	};
 }

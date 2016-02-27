@@ -10,7 +10,8 @@ export default {
 	range: 100,
 	shot: {
 		textures: ['images/shot_3_1.png'],
-		damage: 1,
+		name: 'Ice Tower Shot',
+		damage: 5,
 		homing: true,
 		splash: 50,
 		movementSpeed: 2,
@@ -18,9 +19,9 @@ export default {
 		height: 20,
 		buff: {
 			type: 'debuff',
-			name: 'Ice slow',
-			duration: 3000,
-			progressColor: '#7BCDE8',
+			name: 'Ice Slow',
+			duration: 2000,
+			textures: ['images/ice_debuf.png'],
 			effect(unit) {
 				unit.movementSpeed *= 0.5;
 			}

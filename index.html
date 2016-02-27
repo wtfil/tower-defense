@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
+	<meta name="viewport" content="width=640; initial-scale=1; maximum-scale=1; user-scalable=0;"/>
 	<style>
 		html, body {
 			padding: 0;
@@ -10,12 +11,24 @@
 		.panel-tower {
 			cursor: pointer;
 		}
+		.fullscreen-button {
+			cursor: pointer;
+			position: fixed;
+			width: 40px;
+			height: 40px;
+			top: 5px;
+			right: 5px;
+			font-size: 30px;
+			line-height: 40px;
+			text-align: center;
+			background: #ddd;
+		}
 	</style>
 	<title>Tower Defense</title>
 </head>
 <body>
-	<canvas></canvas>
-	<div data-panel></div>
+	<div class="fullscreen-button" data-fullscreen>⤡</div>
+	<script src="./build/phaser.js"></script>
 	<script src="./build/index.js"></script>
 </body>
 </html>
