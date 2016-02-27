@@ -21,7 +21,7 @@ export default class TowerDefense {
 		this.load.image('font', 'images/PressStart2P.png');
 		this.load.spritesheet('spawn', 'images/spawn.png', SEGMENT, SEGMENT);
 		units.concat(towers).reduce((arr, item) => {
-			return arr.concat(item).concat(item.shot);
+			return arr.concat(item).concat(item.shot).concat(item.shot && item.shot.buff);
 		}, []).filter(Boolean).forEach(item => {
 			if (!item.name) {
 				console.warn('Name is missing', item);

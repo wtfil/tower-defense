@@ -19,9 +19,9 @@ export default {
 		height: 20,
 		buff: {
 			type: 'debuff',
-			name: 'Ice slow',
-			duration: 3000,
-			progressColor: '#7BCDE8',
+			name: 'Ice Slow',
+			duration: 2000,
+			textures: ['images/ice_debuf.png'],
 			effect(unit) {
 				unit.movementSpeed *= 0.5;
 			}
