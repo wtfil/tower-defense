@@ -26,10 +26,13 @@ export const assets = Object.keys(objects).reduce((acc, key) => {
 	return acc.concat(getAssets(objects[key], key));
 }, []);
 
+console.log(objects);
 export const towers = Object.keys(objects)
 	.map(key => objects[key])
+	.filter(Boolean)
 	.filter(item => item.type === 'tower');
 
 export const units = Object.keys(objects)
 	.map(key => objects[key])
+	.filter(Boolean)
 	.filter(item => item.type === 'unit');
