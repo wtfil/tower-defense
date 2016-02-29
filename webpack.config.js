@@ -16,7 +16,6 @@ module.exports = {
 				loader: 'babel'
 			},
 			{
-				test: /phaser/,
 				loader: 'imports'
 			}
 		]
