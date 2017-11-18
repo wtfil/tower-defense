@@ -25,6 +25,8 @@ module.exports = {
 		new webpack.NoErrorsPlugin()
 	],
 	devServer: {
+		noInfo: true,
+ 		stats: 'errors-only',
 		hot: true,
 		inline: true,
 		port: 3000

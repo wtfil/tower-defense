@@ -3,13 +3,15 @@
   "name": "tower-defense",
   "version": "0.1.0",
   "scripts": {
-    "test": "mocha",
+    "test": "mocha --require babel-register",
     "start": "webpack-dev-server --hot",
     "build": "NODE_ENV=production webpack -p --config webpack.config.js",
     "deploy": "npm run build && gh-pages -d public"
   },
   "dependencies": {
+    "babel-core": "6.2.4",
     "babel-loader": "^6.2.4",
+    "babel-register": "^6.26.0",
     "phaser": "^2.4.6"
   },
   "devDependencies": {
