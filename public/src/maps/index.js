@@ -1,4 +1,5 @@
 import first from './first';
+import second from './second';
 import {spawn, recruit, peasant, sand, grass, rock} from '../objects';
 
 const landscapes = {
@@ -10,6 +11,7 @@ const units = {
 	1: peasant,
 	2: recruit
 };
+const maps = {first, second};
 
 function createMap(config) {
 	var map = config.map.split('\n').filter(Boolean).map(line => {
@@ -29,11 +31,15 @@ function createWaves(waves) {
 		};
 	});
 }
-export function getFirst() {
-	const config = first;
+
+export function getMap(name) {
+	const map = maps[name];
+	if (!map) {
+		throw new Error(`There is not map with name "${name}"`);
+	}
 	return {
-		...config,
-		map: createMap(config),
-		waves: createWaves(config.waves)
+		...map,
+		map: createMap(map),
+		waves: createWaves(map.waves)
 	};
 }

@@ -1,5 +1,5 @@
-import {getFirst} from '../maps';
-import {units, towers} from '../objects';
+import {getMap} from '../maps';
+import {units, towers, decorations} from '../objects';
 import {scale, round, inSplash, isOverlap} from './utils';
 import astar from './algorithms/astar';
 import Unit from './Unit';
@@ -14,14 +14,12 @@ const FONT_SCALES = {
 
 export default class TowerDefense {
 	constructor() {
-		this.map = getFirst();
+		this.map = getMap('first');
 	}
 	preload() {
-		this.load.image('grass', 'images/grass_3.png');
 		this.load.image('font', 'images/PressStart2P.png');
-		this.load.spritesheet('spawn', 'images/spawn.png', SEGMENT, SEGMENT);
-		units.concat(towers).reduce((arr, item) => {
-			return arr.concat(item).concat(item.shot).concat(item.shot && item.shot.buff);
+		units.concat(towers, decorations).reduce((arr, item) => {
+			return arr.concat(item, item.shot, item.shot && item.shot.buff);
 		}, []).filter(Boolean).forEach(item => {
 			if (!item.name) {
 				console.warn('Name is missing', item);
@@ -49,7 +47,8 @@ export default class TowerDefense {
 	}
 
 	create() {
-		const {size: {width, height}, spawn, finish} = this.map;
+		const {size: {width, height}, spawn, finish, map} = this.map;
+		var i, j;
 		this.stats = {
 			lives: this.map.lives,
 			gold: this.map.gold,
@@ -58,7 +57,11 @@ export default class TowerDefense {
 		};
 		this.physics.startSystem(Phaser.Physics.ARCADE);
 		this.stage.backgroundColor = 0xffffff;
-		this.add.tileSprite(0, 0, width * SEGMENT, height * SEGMENT, 'grass');
+		for (i = 0; i < width; i ++) {
+			for (j = 0; j < height; j ++) {
+				this.addSprite(i * SEGMENT, j * SEGMENT, map[j][i].name);
+			}
+		}
 		this.statsLabel = this.addLabel(5, 5, 'm');
 		this.start = this.addSprite(spawn.x * SEGMENT, spawn.y * SEGMENT, 'spawn');
 		this.finish = this.addSprite(finish.x * SEGMENT, finish.y * SEGMENT, 'spawn');
@@ -71,7 +74,6 @@ export default class TowerDefense {
 		this.towerAllowedPlacesCache = {};
 		this.mapObjects = new Array(this.map.size.height).fill()
 			.map(_ => new Array(this.map.size.width).fill(0));
-
 
 		this.cursor = this.add.sprite();
 		this.cursor.tint = 0xff0000;

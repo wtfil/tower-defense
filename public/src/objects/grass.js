@@ -1,5 +1,5 @@
 export default {
-	name: 'Grass',
+	name: 'grass',
 	type: 'decoration',
 	textures: ['images/grass_3.png'],
 	width: 32,

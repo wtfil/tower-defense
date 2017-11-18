@@ -11,20 +11,6 @@ export cannonTower from './cannonTower';
 export iceTower from './iceTower';
 
 import * as objects from '.';
-function getAssets(config, key) {
-	if (!config || !config.textures) {
-		return [];
-	}
-	return config.textures.map((item, index) => {
-		return [`${key}.${index}`, item];
-	})
-		.concat(getAssets(config.shot, key + '.shot'))
-		.concat(getAssets(config.death, key + '.death'));
-
-}
-export const assets = Object.keys(objects).reduce((acc, key) => {
-	return acc.concat(getAssets(objects[key], key));
-}, []);
 
 export const towers = Object.keys(objects)
 	.map(key => objects[key])
@@ -35,3 +21,8 @@ export const units = Object.keys(objects)
 	.map(key => objects[key])
 	.filter(Boolean)
 	.filter(item => item.type === 'unit');
+
+export const decorations = Object.keys(objects)
+	.map(key => objects[key])
+	.filter(Boolean)
+	.filter(item => item.type === 'decoration');

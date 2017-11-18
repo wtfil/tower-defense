@@ -1,7 +1,7 @@
 export default {
-	name: 'Spawn',
+	name: 'spawn',
 	type: 'decoration',
-	textures: ['images/spawn_1.png', 'images/spawn_2.png'],
+	sprite: 'images/spawn.png',
 	width: 32,
 	height: 32
 };
