@@ -1,7 +1,8 @@
+var path = require('path');
 var webpack = require('webpack');
 
 module.exports = {
-	context: __dirname + '/public',
+	context: path.join(__dirname, 'public'),
 	entry: './src/index.js',
 	output: {
 	    path: './public/build',
@@ -26,7 +27,7 @@ module.exports = {
 	],
 	devServer: {
 		noInfo: true,
- 		stats: 'errors-only',
+		stats: 'errors-only',
 		hot: true,
 		inline: true,
 		port: 3000

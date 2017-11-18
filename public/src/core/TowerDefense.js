@@ -110,6 +110,10 @@ export default class TowerDefense {
 	}
 
 	spawnTower(x, y) {
+		if (!this.inBounds(x, y)) {
+			this.disableTowerToBuild();
+			return;
+		}
 		if (!this.isAllowToBuild(x, y)) {
 			return;
 		}
@@ -118,6 +122,10 @@ export default class TowerDefense {
 		this.mapObjects[y / SEGMENT][x / SEGMENT] = 1;
 		this.towerAllowedPlacesCache = {};
 		this.units.forEachExists(::this.updatePath);
+	}
+
+	inBounds(x, y) {
+		return x >= 0 && y >= 0 && x < this.map.size.width * SEGMENT && y < this.map.size.height * SEGMENT;
 	}
 
 	isAllowToBuild(x, y) {
@@ -165,8 +173,7 @@ export default class TowerDefense {
 
 		this.cursor.position.set(x, y);
 		if (this.esc.isDown) {
-			this.cursor.visible = false;
-			this.towerToBuild = null;
+			this.disableTowerToBuild();
 		}
 		if (this.towerToBuild) {
 			this.cursor.tint = this.isAllowToBuild(x, y) ?
@@ -183,6 +190,11 @@ export default class TowerDefense {
 		this.cursor.width = SEGMENT;
 		this.cursor.height = SEGMENT;
 		this.cursor.visible = true;
+	}
+
+	disableTowerToBuild() {
+		this.cursor.visible = false;
+		this.towerToBuild = null;
 	}
 
 	attackUnit(bullet, unit) {
