@@ -3,12 +3,10 @@ var webpack = require('webpack');
 
 module.exports = {
 	devtool: 'source-map',
-	context: path.join(__dirname, 'public'),
-	entry: './src/index.js',
+	context: path.join(__dirname, 'src'),
+	entry: './index.js',
 	output: {
-	    path: './public/build',
 	    filename: 'index.js',
-	    publicPath: 'http://localhost:3000/public/build'
 	},
 	module: {
 		loaders: [
