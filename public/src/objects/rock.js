@@ -3,5 +3,6 @@ export default {
 	type: 'decoration',
 	textures: ['images/rock.png'],
 	width: 32,
-	height: 32
+	height: 32,
+	transparent: false
 };

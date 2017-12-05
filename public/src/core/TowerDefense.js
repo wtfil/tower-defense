@@ -14,7 +14,7 @@ const FONT_SCALES = {
 
 export default class TowerDefense {
 	constructor() {
-		this.map = getMap('first');
+		this.map = getMap('second');
 	}
 	preload() {
 		this.load.image('font', 'images/PressStart2P.png');
@@ -57,11 +57,16 @@ export default class TowerDefense {
 		};
 		this.physics.startSystem(Phaser.Physics.ARCADE);
 		this.stage.backgroundColor = 0xffffff;
-		for (i = 0; i < width; i ++) {
-			for (j = 0; j < height; j ++) {
-				this.addSprite(i * SEGMENT, j * SEGMENT, map[j][i].name);
+
+		this.mapObjects = [];
+		for (i = 0; i < height; i ++) {
+			this.mapObjects[i] = [];
+			for (j = 0; j < width; j ++) {
+				this.mapObjects[i][j] = map[i][j].transparent ? 0 : 1;
+				this.addSprite(j * SEGMENT, i * SEGMENT, map[i][j].name);
 			}
 		}
+
 		this.statsLabel = this.addLabel(5, 5, 'm');
 		this.start = this.addSprite(spawn.x * SEGMENT, spawn.y * SEGMENT, 'spawn');
 		this.finish = this.addSprite(finish.x * SEGMENT, finish.y * SEGMENT, 'spawn');
@@ -72,8 +77,6 @@ export default class TowerDefense {
 		this.bullets = this.add.physicsGroup();
 
 		this.towerAllowedPlacesCache = {};
-		this.mapObjects = new Array(this.map.size.height).fill()
-			.map(_ => new Array(this.map.size.width).fill(0));
 
 		this.cursor = this.add.sprite();
 		this.cursor.tint = 0xff0000;
