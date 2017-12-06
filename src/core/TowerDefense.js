@@ -6,15 +6,10 @@ import Unit from './Unit';
 import Tower from './Tower';
 
 const SEGMENT = 64;
-const FONT_SCALES = {
-	s: 1 / 4,
-	m: 1 / 2,
-	l: 1
-};
 
 window.WebFontConfig = {
 	google: {
-		  families: ['Finger Paint']
+		families: ['Finger Paint']
 	}
 }
 
@@ -45,16 +40,13 @@ export default class TowerDefense {
 		return sprite;
 	}
 	addLabel(x, y, size) {
-		/*
-		var label = this.add.retroFont('font', 32, 32, Phaser.RetroFont.TEXT_SET1);
-		var image = this.add.image(x, y, label);
-		var fontScale = FONT_SCALES[size] || 1;
-		image.scale.setTo(fontScale, fontScale);
-		label.multiLine = true;
-		return label;
-		*/
-		var style = { font: '28px Finger Paint', fill: '#fff'};
-    	var label = this.add.text(0, 0, '123', style);
+		var style = {
+			font: `${size}px Finger Paint`,
+			fill: '#fff',
+			stroke: '#000',
+			strokeThickness: 3
+		};
+    	var label = this.add.text(0, 0, '', style);
     	label.multiLine = true;
     	return label;
 	}
@@ -82,7 +74,6 @@ export default class TowerDefense {
 			}
 		}
 
-		this.statsLabel = this.addLabel(5, 5, 'm');
 		this.start = this.addSprite(spawn.x * SEGMENT, spawn.y * SEGMENT, 'spawn');
 		this.finish = this.addSprite(finish.x * SEGMENT, finish.y * SEGMENT, 'spawn');
 		this.game.physics.arcade.enable(this.finish);
@@ -90,6 +81,7 @@ export default class TowerDefense {
 		this.towers = this.add.group();
 		this.units = this.add.physicsGroup();
 		this.bullets = this.add.physicsGroup();
+		this.statsLabel = this.addLabel(5, 5, 20);
 
 		this.towerAllowedPlacesCache = {};
 
@@ -184,8 +176,7 @@ export default class TowerDefense {
 			Gold  ${this.stats.gold}
 			Lives ${this.stats.lives}
 			Wave  ${this.stats.wave + 1} / ${this.map.waves.length}
-		`//.trim();
-		//`.split(/\s*\n\s*/).filter(Boolean).join('\n');
+		`.replace(/\n\s+/g, '\n').trim();
 
 		this.towers.callAll('setTarget', null, this.units);
 		this.towers.callAll('fire', null, this.bullets);
