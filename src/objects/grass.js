@@ -1,8 +1,8 @@
 export default {
 	name: 'grass',
 	type: 'decoration',
-	textures: ['images/grass_3.png'],
-	width: 32,
-	height: 32,
+	textures: ['kenney-images/1x/towerDefense_tile024.png'],
+	width: 64,
+	height: 64,
 	transparent: true
 };

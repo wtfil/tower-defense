@@ -6,7 +6,9 @@ module.exports = {
 	context: path.join(__dirname, 'src'),
 	entry: './index.js',
 	output: {
+		path: path.resolve(__dirname, 'public', 'build'),
 	    filename: 'index.js',
+		publicPath: '/build'
 	},
 	module: {
 		loaders: [
