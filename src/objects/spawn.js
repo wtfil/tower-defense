@@ -1,8 +1,8 @@
 export default {
 	name: 'spawn',
 	type: 'decoration',
-	textures: ['kenney-images/1x/towerDefense_tile133.png'],
-	width: 32,
-	height: 32,
+	textures: ['images/hud/Spawn.png'],
+	width: 64,
+	height: 64,
 	transparent: true
 };

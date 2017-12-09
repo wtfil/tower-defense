@@ -1,8 +1,7 @@
 export default {
 	name: 'Ice Tower',
 	type: 'tower',
-	//textures: ['images/tower_3_1.png'],
-	sprite: 'kenney-images/1x/towerDefense_tile183.png',
+	textures: ['images/tower_2/Tower_2.png'],
 	width: 64,
 	height: 64,
 	movementSpeed: 0,
@@ -10,8 +9,7 @@ export default {
 	price: 30,
 	range: 100,
 	shot: {
-		//textures: ['images/shot_3_1.png'],
-		sprite: 'kenney-images/1x/towerDefense_tile021.png',
+		textures: ['images/tower_2/Bullet.png'],
 		name: 'Ice Tower Shot',
 		damage: 5,
 		homing: true,
@@ -23,7 +21,9 @@ export default {
 			type: 'debuff',
 			name: 'Ice Slow',
 			duration: 2000,
-			textures: ['images/ice_debuf.png'],
+			width: 32,
+			height: 32,
+			textures: ['images/tower_2/SpellFreeze_Active.png'],
 			effect(unit) {
 				unit.movementSpeed *= 0.5;
 			}
@@ -34,11 +34,7 @@ export default {
 			movementSpeed: 0, // TODO remove
 			corpse: 0,
 			fastAnimation: true,
-			textures: [
-				'images/explosion_3_1.png',
-				'images/explosion_3_2.png',
-				'images/explosion_3_3.png'
-			]
+			textures: ['images/tower_2/Particle.png']
 		}
 	}
 };

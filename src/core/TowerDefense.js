@@ -15,7 +15,7 @@ window.WebFontConfig = {
 
 export default class TowerDefense {
 	constructor() {
-		this.map = getMap('second');
+		this.map = getMap('first');
 	}
 	preload() {
 		this.load.image('font', 'images/PressStart2P.png');
@@ -29,9 +29,10 @@ export default class TowerDefense {
 			if (item.sprite) {
 				this.load.spritesheet(item.name, item.sprite, SEGMENT, SEGMENT);
 			} else {
-				this.load.image(item.name, item.textures[0]);
+				this.load.image(item.name, item.textures[0], SEGMENT, SEGMENT);
 			}
 		});
+		this.load.image('background', 'images/hud/Background.png');
 	}
 	addSprite(x, y, name) {
 		var sprite = this.add.sprite(x, y, name);
@@ -53,7 +54,7 @@ export default class TowerDefense {
 
 	create() {
 		const {size: {width, height}, spawn, finish, map} = this.map;
-		var i, j;
+		var i, j, image;
 		this.stats = {
 			lives: this.map.lives,
 			gold: this.map.gold,
@@ -63,19 +64,23 @@ export default class TowerDefense {
 		this.physics.startSystem(Phaser.Physics.ARCADE);
 		this.stage.backgroundColor = 0xffffff;
 		// TODO unhardcore this
-		this.game.add.tileSprite(0, 0, width * SEGMENT, height * SEGMENT, 'grass');
+		this.game.add.tileSprite(0, 0, width * SEGMENT, height * SEGMENT, 'background');
 
 		this.mapObjects = [];
 		for (i = 0; i < height; i ++) {
 			this.mapObjects[i] = [];
 			for (j = 0; j < width; j ++) {
 				this.mapObjects[i][j] = map[i][j].transparent ? 0 : 1;
-				this.addSprite(j * SEGMENT, i * SEGMENT, map[i][j].name);
+				image = this.add.image(j * SEGMENT, i * SEGMENT, map[i][j].name);
+				image.width = SEGMENT;
+				image.height = SEGMENT;
 			}
 		}
 
-		this.start = this.addSprite(spawn.x * SEGMENT, spawn.y * SEGMENT, 'spawn');
-		this.finish = this.addSprite(finish.x * SEGMENT, finish.y * SEGMENT, 'spawn');
+		this.start = this.add.image(spawn.x * SEGMENT, spawn.y * SEGMENT, 'spawn');
+		this.finish = this.add.image(finish.x * SEGMENT, finish.y * SEGMENT, 'spawn');
+		// TODO this suppose to be in config
+		this.start.width = this.start.height = this.finish.width = this.finish.height = SEGMENT;
 		this.game.physics.arcade.enable(this.finish);
 
 		this.towers = this.add.group();

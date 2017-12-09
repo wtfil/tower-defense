@@ -60,9 +60,9 @@ export default class Unit extends Dynamic {
 			return;
 		}
 		if (!this.buffs[buff.name]) {
-			const sprite = this.game.add.sprite(0, 4, buff.name);
-			sprite.width = 8;
-			sprite.height = 8;
+			const sprite = this.game.add.image(0, 4, buff.name);
+			sprite.width = buff.width;
+			sprite.height = buff.height;
 			this.buffs[buff.name] = {config: buff, sprite};
 			this.addChild(sprite);
 		}

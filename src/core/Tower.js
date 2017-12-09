@@ -43,10 +43,14 @@ export default class Tower extends Dynamic {
 		if (this.lastShotAt + this.fireInterval > now) {
 			return null;
 		}
-		const bullet = new Bullet(this.game, this.config.shot, this.x, this.y);
+		const bullet = new Bullet(
+			this.game,
+			this.config.shot,
+			this.x,
+			this.y
+		);
 		bullet.setTarget(this.target);
 		group.add(bullet);
 		this.lastShotAt = now;
 	}
 }
-
