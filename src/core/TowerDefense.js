@@ -77,8 +77,8 @@ export default class TowerDefense {
 			}
 		}
 
-		this.start = this.add.image(spawn.x * SEGMENT, spawn.y * SEGMENT, 'spawn');
-		this.finish = this.add.image(finish.x * SEGMENT, finish.y * SEGMENT, 'spawn');
+		this.start = this.add.sprite(spawn.x * SEGMENT, spawn.y * SEGMENT, 'spawn');
+		this.finish = this.add.sprite(finish.x * SEGMENT, finish.y * SEGMENT, 'spawn');
 		// TODO this suppose to be in config
 		this.start.width = this.start.height = this.finish.width = this.finish.height = SEGMENT;
 		this.game.physics.arcade.enable(this.finish);
@@ -229,7 +229,6 @@ export default class TowerDefense {
 	}
 
 	unitFinish(_, unit) {
-	    console.log('unit finish');
 		unit.kill();
 		this.removeUnit(unit);
 		this.stats.lives --;

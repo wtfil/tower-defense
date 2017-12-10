@@ -1,36 +1,37 @@
 import Dynamic from './Dynamic';
 import {distance2, getAngle} from './utils';
 
+const SEGMENT = 64;
+
 class UnitSprite extends Dynamic {}
 
 export default class Unit extends Phaser.Sprite {
 	constructor(game, config, x, y) {
 		super(game, x, y);
 
+		const sx = 1 / this.scale.x;
+		const sy = 1 / this.scale.y;
+
+		this.startTime = Date.now();
 		this.game = game;
 		this.config = config;
-		//this.width = config.width;
-		//this.height = config.height;
-		// TODO reuse SEGMENT
-		this.width = 64;
-		this.height = 64;
 		this.game.physics.startSystem(Phaser.Physics.ARCADE);
 		this.game.add.existing(this);
 		this.unit = new UnitSprite(game, config, 0, 0);
 
 		this.addChild(this.unit);
 		this.unit.anchor.set(0.5, 0.5);
-		this.unit.width /= this.scale.x;
-		this.unit.height /= this.scale.y;
-		this.unit.x = 1 / this.scale.x * config.width / 2;
-		this.unit.y = 1 / this.scale.y * config.height / 2;
+		this.unit.width *= sx;
+		this.unit.height *= sy;
+		this.unit.x = sx * SEGMENT / 2;
+		this.unit.y = sy * SEGMENT / 2;
 
 		this.health = this.config.health;
 		this.buffs = {};
 
 		this.healthBar = this.game.add.graphics(0, 0);
-		this.healthBar.width /= this.scale.x;
-		this.healthBar.height /= this.scale.y;
+		this.healthBar.width *= sx;
+		this.healthBar.height *= sy;
 		this.addChild(this.healthBar);
 
 	}
@@ -46,20 +47,17 @@ export default class Unit extends Phaser.Sprite {
 		this.applyBuffs();
 
 		const hp = this.health / this.config.health;
-		const w = this.config.width;
 		const ms = this.movementSpeed * 100;
+		const w = SEGMENT;
 		this.body.velocity.x = Math.cos(this.movingAngle) * ms;
 		this.body.velocity.y = Math.sin(this.movingAngle) * ms;
-		this.unit.angle += 2;
-
-		this.healthBar.scale.setTo(1 / this.scale.x, 1 / this.scale.y);
+		this.unit.angle = Math.sin((Date.now() - this.startTime) / 1000) * 360;
 
 		this.healthBar.clear();
 		this.healthBar.lineStyle(2, 0x00ff00, 0.5);
 		this.healthBar.drawRect(0, 0, w * hp, 2);
 		this.healthBar.lineStyle(2, 0xff0000, 0.5);
 		this.healthBar.drawRect(w * hp, 0, w * (1 - hp), 2);
-
 	}
 
 	applyBuffs() {

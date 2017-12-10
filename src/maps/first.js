@@ -13,10 +13,6 @@ export default {
 		x: 19,
 		y: 7
 	},
-	finish: {
-		x: 4,
-		y: 4
-	},
 	waves: [
 		[1, 10],
 		[2, 10]
