@@ -134,7 +134,12 @@ export default class TowerDefense {
 		if (!this.isAllowToBuild(x, y)) {
 			return;
 		}
-		this.towers.add(new Tower(this.game, this.towerToBuild, x, y));
+		this.towers.add(new Tower(
+		    this.game,
+		    this.towerToBuild,
+		    x + this.towerToBuild.width / 2,
+		    y + this.towerToBuild.height / 2
+		));
 		this.stats.gold -= this.towerToBuild.price;
 		this.mapObjects[y / SEGMENT][x / SEGMENT] = 1;
 		this.towerAllowedPlacesCache = {};
@@ -224,6 +229,7 @@ export default class TowerDefense {
 	}
 
 	unitFinish(_, unit) {
+	    console.log('unit finish');
 		unit.kill();
 		this.removeUnit(unit);
 		this.stats.lives --;
