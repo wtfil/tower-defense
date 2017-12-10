@@ -7,19 +7,11 @@ import Tower from './Tower';
 
 const SEGMENT = 64;
 
-window.WebFontConfig = {
-	google: {
-		families: ['Finger Paint']
-	}
-}
-
 export default class TowerDefense {
 	constructor() {
 		this.map = getMap('first');
 	}
 	preload() {
-		this.load.image('font', 'images/PressStart2P.png');
-		this.load.script('webfont', '//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js');
 		units.concat(towers, decorations).reduce((arr, item) => {
 			return arr.concat(item, item.shot, item.shot && item.shot.buff);
 		}, []).filter(Boolean).forEach(item => {
@@ -33,6 +25,8 @@ export default class TowerDefense {
 			}
 		});
 		this.load.image('background', 'images/hud/Background.png');
+        this.game.stage.backgroundColor = "#fff";
+        this.game.canvas.oncontextmenu = e => e.preventDefault();
 	}
 	addSprite(x, y, name) {
 		var sprite = this.add.sprite(x, y, name);
@@ -41,15 +35,12 @@ export default class TowerDefense {
 		return sprite;
 	}
 	addLabel(x, y, size) {
-		var style = {
-			font: `${size}px Finger Paint`,
-			fill: '#fff',
-			stroke: '#000',
-			strokeThickness: 3
+		const style = {
+			font: `${size}px Courier`,
+			fill: '#15cee4',
+			fontWeight: 'bold',
 		};
-    	var label = this.add.text(0, 0, '', style);
-    	label.multiLine = true;
-    	return label;
+    	return this.add.text(x, y, '', style);
 	}
 
 	create() {
