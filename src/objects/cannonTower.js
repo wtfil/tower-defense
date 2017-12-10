@@ -10,14 +10,13 @@ export default {
 	range: 250,
 	shot: {
 		name: 'Cannon Tower Shot',
-		// TODO make own bullets
-		textures: ['images/tower_1/BulletT1.png'],
+		textures: ['images/tower_4/bullet1.png'],
 		damage: 30,
 		homing: false,
 		splash: 30,
 		movementSpeed: 1.5,
-		width: 30,
-		height: 30,
+		width: 40,
+		height: 40,
 		death: {
 			width: 18,
 			height: 18,

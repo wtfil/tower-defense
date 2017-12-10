@@ -3,6 +3,8 @@ import {distance2, getAngle} from './utils';
 
 const SEGMENT = 64;
 
+const periodic = x => Math.cos(x) + Math.sin(x * 1.5 + Math.PI / 3);
+
 class UnitSprite extends Dynamic {}
 
 export default class Unit extends Phaser.Sprite {
@@ -51,7 +53,7 @@ export default class Unit extends Phaser.Sprite {
 		const w = SEGMENT;
 		this.body.velocity.x = Math.cos(this.movingAngle) * ms;
 		this.body.velocity.y = Math.sin(this.movingAngle) * ms;
-		this.unit.angle = Math.sin((Date.now() - this.startTime) / 1000) * 360;
+		this.unit.angle = periodic((Date.now() - this.startTime) / 2000) * 360;
 
 		this.healthBar.clear();
 		this.healthBar.lineStyle(2, 0x00ff00, 0.5);
