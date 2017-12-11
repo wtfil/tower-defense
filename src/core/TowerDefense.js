@@ -5,19 +5,13 @@ import astar from './algorithms/astar';
 import Unit from './Unit';
 import Tower from './Tower';
 
-const SEGMENT = 32;
-const FONT_SCALES = {
-	s: 1 / 4,
-	m: 1 / 2,
-	l: 1
-};
+const SEGMENT = 64;
 
 export default class TowerDefense {
 	constructor() {
-		this.map = getMap('second');
+		this.map = getMap('first');
 	}
 	preload() {
-		this.load.image('font', 'images/PressStart2P.png');
 		units.concat(towers, decorations).reduce((arr, item) => {
 			return arr.concat(item, item.shot, item.shot && item.shot.buff);
 		}, []).filter(Boolean).forEach(item => {
@@ -27,9 +21,12 @@ export default class TowerDefense {
 			if (item.sprite) {
 				this.load.spritesheet(item.name, item.sprite, SEGMENT, SEGMENT);
 			} else {
-				this.load.image(item.name, item.textures[0]);
+				this.load.image(item.name, item.textures[0], SEGMENT, SEGMENT);
 			}
 		});
+		this.load.image('background', 'images/hud/Background.png');
+        this.game.stage.backgroundColor = "#fff";
+        this.game.canvas.oncontextmenu = e => e.preventDefault();
 	}
 	addSprite(x, y, name) {
 		var sprite = this.add.sprite(x, y, name);
@@ -38,17 +35,17 @@ export default class TowerDefense {
 		return sprite;
 	}
 	addLabel(x, y, size) {
-		var label = this.add.retroFont('font', 32, 32, Phaser.RetroFont.TEXT_SET1);
-		var image = this.add.image(x, y, label);
-		var fontScale = FONT_SCALES[size] || 1;
-		image.scale.setTo(fontScale, fontScale);
-		label.multiLine = true;
-		return label;
+		const style = {
+			font: `${size}px Courier`,
+			fill: '#15cee4',
+			fontWeight: 'bold',
+		};
+    	return this.add.text(x, y, '', style);
 	}
 
 	create() {
 		const {size: {width, height}, spawn, finish, map} = this.map;
-		var i, j;
+		var i, j, image;
 		this.stats = {
 			lives: this.map.lives,
 			gold: this.map.gold,
@@ -57,24 +54,30 @@ export default class TowerDefense {
 		};
 		this.physics.startSystem(Phaser.Physics.ARCADE);
 		this.stage.backgroundColor = 0xffffff;
+		// TODO unhardcore this
+		this.game.add.tileSprite(0, 0, width * SEGMENT, height * SEGMENT, 'background');
 
 		this.mapObjects = [];
 		for (i = 0; i < height; i ++) {
 			this.mapObjects[i] = [];
 			for (j = 0; j < width; j ++) {
 				this.mapObjects[i][j] = map[i][j].transparent ? 0 : 1;
-				this.addSprite(j * SEGMENT, i * SEGMENT, map[i][j].name);
+				image = this.add.image(j * SEGMENT, i * SEGMENT, map[i][j].name);
+				image.width = SEGMENT;
+				image.height = SEGMENT;
 			}
 		}
 
-		this.statsLabel = this.addLabel(5, 5, 'm');
-		this.start = this.addSprite(spawn.x * SEGMENT, spawn.y * SEGMENT, 'spawn');
-		this.finish = this.addSprite(finish.x * SEGMENT, finish.y * SEGMENT, 'spawn');
+		this.start = this.add.sprite(spawn.x * SEGMENT, spawn.y * SEGMENT, 'spawn');
+		this.finish = this.add.sprite(finish.x * SEGMENT, finish.y * SEGMENT, 'spawn');
+		// TODO this suppose to be in config
+		this.start.width = this.start.height = this.finish.width = this.finish.height = SEGMENT;
 		this.game.physics.arcade.enable(this.finish);
 
 		this.towers = this.add.group();
 		this.units = this.add.physicsGroup();
 		this.bullets = this.add.physicsGroup();
+		this.statsLabel = this.addLabel(5, 5, 20);
 
 		this.towerAllowedPlacesCache = {};
 
@@ -83,7 +86,7 @@ export default class TowerDefense {
 		this.cursor.visible = false;
 
 		towers.forEach((tower, index) => {
-			var button = this.add.button(640, SEGMENT * index, tower.name, () => this.selectTowerToBuild(tower));
+			var button = this.add.button(width * SEGMENT, SEGMENT * index, tower.name, () => this.selectTowerToBuild(tower));
 			button.width = SEGMENT;
 			button.height = SEGMENT;
 		});
@@ -122,7 +125,12 @@ export default class TowerDefense {
 		if (!this.isAllowToBuild(x, y)) {
 			return;
 		}
-		this.towers.add(new Tower(this.game, this.towerToBuild, x, y));
+		this.towers.add(new Tower(
+		    this.game,
+		    this.towerToBuild,
+		    x + this.towerToBuild.width / 2,
+		    y + this.towerToBuild.height / 2
+		));
 		this.stats.gold -= this.towerToBuild.price;
 		this.mapObjects[y / SEGMENT][x / SEGMENT] = 1;
 		this.towerAllowedPlacesCache = {};
@@ -169,7 +177,7 @@ export default class TowerDefense {
 			Gold  ${this.stats.gold}
 			Lives ${this.stats.lives}
 			Wave  ${this.stats.wave + 1} / ${this.map.waves.length}
-		`.trim();
+		`.replace(/\n\s+/g, '\n').trim();
 
 		this.towers.callAll('setTarget', null, this.units);
 		this.towers.callAll('fire', null, this.bullets);

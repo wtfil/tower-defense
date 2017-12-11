@@ -3,8 +3,8 @@ export sand from './sand';
 export rock from './rock';
 export spawn from './spawn';
 
-export peasant from './peasant';
-export recruit from './recruit';
+export unit1 from './unit1';
+export unit2 from './unit2';
 
 export arrowTower from './arrowTower';
 export cannonTower from './cannonTower';

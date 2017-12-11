@@ -1,12 +1,19 @@
 import Dynamic from './Dynamic';
 import Bullet from './Bullet';
-import {inRangeDiff, inRange} from './utils';
+import {inRangeDiff, inRange, getAngle} from './utils';
 
 export default class Tower extends Dynamic {
 	constructor(...args) {
 		super(...args);
 		this.fireInterval = 1000 / this.config.attackSpeed;
 		this.lastShotAt = 0;
+		this.anchor.set(0.5, 0.5);
+	}
+
+	update() {
+		if (this.target) {
+			this.angle = getAngle(this, this.target) * 180 / Math.PI + 90;
+		}
 	}
 
 	setTarget(units) {
@@ -49,4 +56,3 @@ export default class Tower extends Dynamic {
 		this.lastShotAt = now;
 	}
 }
-

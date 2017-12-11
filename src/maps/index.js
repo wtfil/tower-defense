@@ -1,6 +1,6 @@
 import first from './first';
 import second from './second';
-import {spawn, recruit, peasant, sand, grass, rock} from '../objects';
+import {spawn, sand, grass, rock, unit1, unit2} from '../objects';
 
 const landscapes = {
 	0: sand,
@@ -8,8 +8,8 @@ const landscapes = {
 	2: rock
 };
 const units = {
-	1: peasant,
-	2: recruit
+	1: unit1,
+	2: unit2
 };
 const maps = {first, second};
 
