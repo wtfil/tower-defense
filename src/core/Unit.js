@@ -14,7 +14,7 @@ export default class Unit extends Phaser.Sprite {
 		const sx = 1 / this.scale.x;
 		const sy = 1 / this.scale.y;
 
-		this.startTime = Date.now();
+		this.startTime = ~~(Math.random() * 1e6);
 		this.game = game;
 		this.config = config;
 		this.game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -35,7 +35,6 @@ export default class Unit extends Phaser.Sprite {
 		this.healthBar.width *= sx;
 		this.healthBar.height *= sy;
 		this.addChild(this.healthBar);
-
 	}
 	update() {
 		if (this.path && distance2(this, this.path[0]) < 10) {
