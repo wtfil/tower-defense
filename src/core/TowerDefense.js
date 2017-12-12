@@ -28,8 +28,8 @@ export default class TowerDefense {
 			}
 		});
 
-		this.load.image('background', 'images/hud/Background.png');
 		this.load.audio('background', 'audio/bg_music.mp3');
+		this.load.image('background', 'images/hud/Background.png');
         this.game.stage.backgroundColor = "#fff";
         this.game.canvas.oncontextmenu = e => e.preventDefault();
 	}
@@ -45,7 +45,7 @@ export default class TowerDefense {
 			fill: '#15cee4',
 			fontWeight: 'bold',
 		};
-    	return this.add.text(x, y, '', style);
+		return this.add.text(x, y, '', style);
 	}
 
 	create() {
@@ -57,7 +57,8 @@ export default class TowerDefense {
 			unitsToKill: 0,
 			wave: 0
 		};
-		this.add.audio('background').play();
+		this.backgroundAudio = this.add.audio('background');
+		this.backgroundAudio.play();
 		this.physics.startSystem(Phaser.Physics.ARCADE);
 		this.stage.backgroundColor = 0xffffff;
 		// TODO unhardcore this
@@ -132,10 +133,10 @@ export default class TowerDefense {
 			return;
 		}
 		this.towers.add(new Tower(
-		    this.game,
-		    this.towerToBuild,
-		    x + this.towerToBuild.width / 2,
-		    y + this.towerToBuild.height / 2
+			this.game,
+			this.towerToBuild,
+			x + this.towerToBuild.width / 2,
+			y + this.towerToBuild.height / 2
 		));
 		this.stats.gold -= this.towerToBuild.price;
 		this.mapObjects[y / SEGMENT][x / SEGMENT] = 1;
@@ -201,6 +202,10 @@ export default class TowerDefense {
 		if (this.input.activePointer.isDown && this.towerToBuild) {
 			this.spawnTower(x, y);
 		}
+	}
+
+	shutdown() {
+		this.backgroundAudio.stop();
 	}
 
 	selectTowerToBuild(tower) {
