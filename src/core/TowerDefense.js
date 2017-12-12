@@ -23,8 +23,13 @@ export default class TowerDefense {
 			} else {
 				this.load.image(item.name, item.textures[0], SEGMENT, SEGMENT);
 			}
+			if (item.born) {
+				this.load.audio(item.born.name, item.born.audio);
+			}
 		});
+
 		this.load.image('background', 'images/hud/Background.png');
+		this.load.audio('background', 'audio/bg_music.mp3');
         this.game.stage.backgroundColor = "#fff";
         this.game.canvas.oncontextmenu = e => e.preventDefault();
 	}
@@ -52,6 +57,7 @@ export default class TowerDefense {
 			unitsToKill: 0,
 			wave: 0
 		};
+		this.add.audio('background').play();
 		this.physics.startSystem(Phaser.Physics.ARCADE);
 		this.stage.backgroundColor = 0xffffff;
 		// TODO unhardcore this
@@ -251,5 +257,4 @@ export default class TowerDefense {
 			}
 		});
 	}
-
 }

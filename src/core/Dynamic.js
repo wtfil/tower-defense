@@ -11,5 +11,9 @@ export default class Dynamic extends Phaser.Sprite {
 		this.animations.play('move', 4, true);
 		this.checkWorldBounds = true;
 		this.outOfBoundsKill = true;
+
+		if (config.born) {
+			this.game.add.audio(config.born.name).play();
+		}
 	}
 }

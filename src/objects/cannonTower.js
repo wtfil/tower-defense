@@ -11,6 +11,10 @@ export default {
 	shot: {
 		name: 'Cannon Tower Shot',
 		textures: ['images/tower_4/bullet2.png'],
+		born: {
+			name: 'Cannon Shot',
+			audio: ['audio/missile_launch.wav'],
+		},
 		damage: 30,
 		homing: false,
 		splash: 30,

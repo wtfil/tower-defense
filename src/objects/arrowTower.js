@@ -10,6 +10,10 @@ export default {
 	range: 250,
 	shot: {
 		name: 'Arrow Tower Ammo',
+		born: {
+			name: 'Arrow Shot',
+			audio: ['audio/cannon_shoot.wav'],
+		},
 		textures: ['images/tower_1/BulletT1.png'],
 		damage: 3,
 		homing: true,
