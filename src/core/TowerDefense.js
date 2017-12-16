@@ -26,6 +26,10 @@ export default class TowerDefense {
 			if (item.born) {
 				this.load.audio(item.born.name, item.born.audio);
 			}
+			if (item.death) {
+				console.log('load', item.death);
+				this.load.image(item.death.name, item.death.particle, 3, 3);
+			}
 		});
 
 		this.load.audio('background', 'audio/bg_music.mp3');

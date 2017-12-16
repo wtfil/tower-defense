@@ -14,19 +14,15 @@ export default {
 			name: 'Arrow Shot',
 			audio: ['audio/cannon_shoot.wav'],
 		},
+		death: {
+			name: 'Arrow Show Explode',
+			particle: 'images/tower_1/ParticleT1.png'
+		},
 		textures: ['images/tower_1/BulletT1.png'],
 		damage: 3,
 		homing: true,
 		movementSpeed: 3,
 		width: 20,
-		height: 20,
-		death: {
-			width: 16,
-			height: 16,
-			movementSpeed: 0, // TODO remove
-			corpse: 0,
-			fastAnimation: true,
-			textures: ['images/tower_1/ParticleT1.png'],
-		}
+		height: 20
 	}
 };
