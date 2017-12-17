@@ -1,5 +1,5 @@
 import Dynamic from './Dynamic';
-import {distance2, getAngle} from './utils';
+import {distance2} from './utils';
 
 const SEGMENT = 64;
 
@@ -9,38 +9,28 @@ class UnitSprite extends Dynamic {}
 
 export default class Unit extends Phaser.Sprite {
     constructor(game, config, x, y) {
-        super(game, x, y);
-
-        const sx = 1 / this.scale.x;
-        const sy = 1 / this.scale.y;
+        super(game, x, y, 'none');
 
         this.startTime = ~~(Math.random() * 1e6);
         this.game = game;
         this.config = config;
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         this.game.add.existing(this);
-        this.unit = new UnitSprite(game, config, 0, 0);
-
+        this.unit = new UnitSprite(game, config, SEGMENT / 2, SEGMENT / 2);
         this.addChild(this.unit);
         this.unit.anchor.set(0.5, 0.5);
-        this.unit.width *= sx;
-        this.unit.height *= sy;
-        this.unit.x = sx * SEGMENT / 2;
-        this.unit.y = sy * SEGMENT / 2;
 
         this.health = this.config.health;
         this.buffs = {};
 
         this.healthBar = this.game.add.graphics(0, 0);
-        this.healthBar.width *= sx;
-        this.healthBar.height *= sy;
         this.addChild(this.healthBar);
     }
     update() {
         if (this.path && distance2(this, this.path[0]) < 10) {
             if (this.path.length > 1) {
                 this.path = this.path.slice(1);
-                this.movingAngle = getAngle(this, this.path[0]);
+                this.movingAngle = this.game.physics.arcade.angleBetween(this, this.path[0]);
             } else {
                 this.path = null;
             }
@@ -95,6 +85,6 @@ export default class Unit extends Phaser.Sprite {
 
     setPath(path) {
         this.path = path;
-        this.movingAngle = getAngle(this, path[0]);
+        this.movingAngle = this.game.physics.arcade.angleBetween(this, path[0]);
     }
 }

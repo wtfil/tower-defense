@@ -19,20 +19,6 @@ export function scale(point, n) {
     };
 }
 
-export function getAngle(a, b, applySizes) {
-    var dx = b.x - a.x;
-    var dy = b.y - a.y;
-    if (applySizes) {
-        dx += (b.width - a.width) / 2;
-        dy += (b.height - b.width) / 2;
-    }
-    var angle = Math.atan(dy / dx);
-    if (dx < 0) {
-        angle = Math.PI + angle;
-    }
-    return angle;
-}
-
 export function inObject(a, b) {
     var aw2 = a.config ? a.config.width / 2 : 0;
     var ah2 = a.config ? a.config.height / 2 : 0;

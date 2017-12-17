@@ -1,6 +1,6 @@
 import Dynamic from './Dynamic';
 import Bullet from './Bullet';
-import {inRangeDiff, inRange, getAngle} from './utils';
+import {inRangeDiff, inRange} from './utils';
 
 export default class Tower extends Dynamic {
     constructor(...args) {
@@ -12,7 +12,7 @@ export default class Tower extends Dynamic {
 
     update() {
         if (this.target) {
-            this.angle = getAngle(this, this.target) * 180 / Math.PI + 90;
+            this.rotation = this.game.physics.arcade.angleBetweenCenters(this, this.target) + Math.PI / 2;
         }
     }
 

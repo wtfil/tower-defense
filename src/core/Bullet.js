@@ -1,4 +1,3 @@
-import {getAngle} from './utils';
 import Dynamic from './Dynamic';
 
 export default class Bullet extends Dynamic {
@@ -9,11 +8,10 @@ export default class Bullet extends Dynamic {
     update() {
         const ms = this.config.movementSpeed * 100;
         if (this.config.homing && this.target) {
-            this.movingAngle = getAngle(this, this.target, true);
-            this.angle = this.movingAngle * 180 / Math.PI;
+            this.rotation = this.game.physics.arcade.angleBetweenCenters(this, this.target, true);
         }
-        this.body.velocity.x = ms * Math.cos(this.movingAngle);
-        this.body.velocity.y = ms * Math.sin(this.movingAngle);
+        this.body.velocity.x = ms * Math.cos(this.rotation);
+        this.body.velocity.y = ms * Math.sin(this.rotation);
     }
 
     clearTarget(unit) {
@@ -24,7 +22,6 @@ export default class Bullet extends Dynamic {
 
     setTarget(target) {
         this.target = target;
-        this.movingAngle = getAngle(this, target, true);
-        this.angle = this.movingAngle * 180 / Math.PI;
+        this.rotation = this.game.physics.arcade.angleBetweenCenters(this, this.target, true);
     }
 }

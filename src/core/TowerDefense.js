@@ -27,13 +27,13 @@ export default class TowerDefense {
                 this.load.audio(item.born.name, item.born.audio);
             }
             if (item.death) {
-                console.log('load', item.death);
                 this.load.image(item.death.name, item.death.particle, 3, 3);
             }
         });
 
         this.load.audio('background', 'audio/bg_music.mp3');
         this.load.image('background', 'images/hud/Background.png');
+        this.load.image('none', 'images/hud/64x64-00000000.png', SEGMENT, SEGMENT);
         this.game.stage.backgroundColor = "#fff";
         this.game.canvas.oncontextmenu = e => e.preventDefault();
     }
